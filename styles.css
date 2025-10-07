@@ -1,14 +1,18 @@
 body {
     font-family: Helvetica;
-    background-color: #000000;
-    color: #ffffff;
-    margin-left: 50px;
-    min-width: 650px;
+    background-color: #764b36;
+    color: #3b4649;
+    margin-left: 15%;
+    margin-right: 15%;
+    min-width: 400px;
 }
 
 h1 {
-    font-size: 100px;
+    font-size: 90px;
     margin-top: 150px;
+    margin-right: 50px;
+    color: #efe7dd;
+    text-align: center;
 }
 
 h2{
@@ -19,12 +23,26 @@ h3{
     font-size: 30px;
 }
 
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #865b46;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #efe7dd;
+  border-radius: 6px;
+  border: 3px solid #cc7a00;
+}
+
 .navbar {
     display: flex;
     justify-content: left;
     align-items: center;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #764b36;
+    color: #efe7dd;
     padding: 8px 20px;
     position: fixed;
     width: 100%;
@@ -34,8 +52,8 @@ h3{
 
 
 .navbar a {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #efe7dd;
+    color: #3b4649;
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 10px;
@@ -54,8 +72,8 @@ h3{
         display: flex;
         justify-content: space-between;
         align-items: start;
-        background-color: #ffffff;
-        color: #000000;
+        background-color: #cc7a00;
+        color: #3b4649;
         padding: 22px 40px;
         position: fixed;
         width: 100%;
@@ -65,8 +83,8 @@ h3{
     
     
     .navbar a {
-        background-color: #000000;
-        color: #ffffff;
+        background-color: #efe7dd;
+        color: #3b4649;
         text-decoration: none;
         padding: 10px 15px;
         border-radius: 10px;
@@ -90,7 +108,7 @@ p{
     margin-bottom: 20px;
     padding: 20px;
     max-width: 80%;
-    background-color: #363636;
+    background-color: #efe7dd;
     border-radius: 20px;
     align-items: center;
 }
@@ -118,7 +136,7 @@ p{
 }
 
 .grayBack{
-    background-color: rgb(37, 37, 37);
+    background-color: #efe7dd;
     border-radius: 20px;
     padding: 20px;
     padding-top: 3px;
