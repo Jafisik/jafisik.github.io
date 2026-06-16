@@ -506,13 +506,33 @@
   .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
 
+  .ig-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); text-decoration: none; flex-shrink: 0; }
+  .ig-link:hover { color: var(--text); }
+
   /* ── Responsive ── */
-  @media (max-width: 600px) {
-    .header-inner { gap: 8px; }
+  @media (max-width: 640px) {
+    header { padding: 0 1rem; }
+    .header-inner { gap: 6px; height: 50px; }
     .logo { display: none; }
+    .ig-link span { display: none; }
+    .live-badge { display: none; }
+    .filter-bar { padding: 0 1rem; }
+    .filter-inner { gap: 6px; }
+    select { font-size: 12px; padding: 5px 8px; padding-right: 20px; }
+    .cta-btn { font-size: 12px; padding: 5px 10px; }
+    .layout { padding: 0 1rem; gap: 10px; }
+    .main-content .list { padding: 0; }
+    .main-content .stats-bar { padding: 0; gap: 6px; }
+    .stat { padding: 5px 10px; font-size: 12px; }
+    .stat strong { font-size: 16px; }
+    .card { padding: 12px 14px; }
     .detail-grid { grid-template-columns: 1fr; }
-    .stats-bar { gap: 8px; }
-    .stat { padding: 6px 12px; }
+    .card-name { font-size: 14px; }
+    .avatar { width: 36px; height: 36px; font-size: 12px; }
+    .sb-toggle { font-size: 12px; padding: 8px 10px; }
+    .chip { font-size: 11px; padding: 3px 8px; }
+    .review-header { gap: 5px; flex-wrap: wrap; }
+    .review-label { font-size: 11px; }
   }
 </style>
 </head>
@@ -525,14 +545,13 @@
   <header>
     <div class="header-inner">
       <div class="logo">bez<span>hormonu</span></div>
-      <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);text-decoration:none;flex-shrink:0" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@bezhormonu</a>
+      <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="ig-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@bezhormonu</a>
       <div class="search-wrap">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render()">
       </div>
       <div class="live-badge">
         <div class="dot" id="dot"></div>
-        <span id="last-update">–</span>
       </div>
     </div>
   </header>
@@ -713,11 +732,7 @@ async function tick() {
 }
 
 function setStatus(state) {
-  const dot = document.getElementById('dot');
-  const ts = document.getElementById('last-update');
-  dot.className = 'dot' + (state === 'err' ? ' err' : '');
-  const now = new Date();
-  ts.textContent = now.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('dot').className = 'dot' + (state === 'err' ? ' err' : '');
 }
 
 // ── Kraje select ─────────────────────────────────────────
