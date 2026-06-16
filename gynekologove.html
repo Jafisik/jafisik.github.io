@@ -446,9 +446,17 @@
 
   .empty svg { display: block; margin: 0 auto 12px; color: var(--text-light); }
 
-  /* ── Review items ── */
-  .review-item { padding: 12px 0; }
-  .review-sep { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 16px; }
+  /* ── Carousel ── */
+  .car-track-wrap { overflow: hidden; }
+  .car-track { display: flex; transition: transform .3s ease; }
+  .car-slide { min-width: 100%; padding: 4px 0; }
+  .car-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
+  .car-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .car-btn:hover { border-color: var(--border-hover); }
+  .car-dots { display: flex; gap: 5px; }
+  .car-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hover); transition: background .2s; }
+  .car-dot.active { background: var(--accent); }
+  .car-counter { font-size: 12px; color: var(--text-muted); min-width: 32px; text-align: center; }
   .review-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
@@ -679,9 +687,10 @@ function render() {
     const starsHtml = '★'.repeat(avgRounded) + `<span class="empty-star">${'★'.repeat(5 - avgRounded)}</span>`;
     const lgbtYes = reviews.some(r => (r[C.lgbt]||'').toLowerCase().includes('ano'));
     const noFees = reviews.some(r => /^ne/i.test(r[C.poplatky]||''));
+    const hasFees = !noFees && reviews.some(r => (r[C.poplatky]||'').trim());
     const web = reviews.map(r => r[C.web]).find(w => w?.trim());
 
-    const reviewsHtml = reviews.map((r, ri) => {
+    const slidesHtml = reviews.map((r, ri) => {
       const hvezdy = Math.min(parseInt(r[C.hvezdy]) || 0, 5);
       const rStars = '★'.repeat(hvezdy) + `<span class="empty-star">${'★'.repeat(5 - hvezdy)}</span>`;
       const grid = [
@@ -713,7 +722,7 @@ function render() {
         { l: 'Závěr a poznámky', v: r[C.zaver] },
       ].filter(f => f.v);
 
-      return `<div class="review-item${ri > 0 ? ' review-sep' : ''}">
+      return `<div class="car-slide">
         <div class="review-header">
           <span class="review-label">Hodnocení ${ri + 1}</span>
           <span class="stars" style="font-size:13px">${rStars}</span>
@@ -723,6 +732,14 @@ function render() {
         ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
       </div>`;
     }).join('');
+
+    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>
+      ${reviews.length > 1 ? `<div class="car-nav">
+        <button class="car-btn" onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>
+        <div class="car-dots" id="dots-${i}">${reviews.map((_,di) => `<div class="car-dot${di===0?' active':''}"></div>`).join('')}</div>
+        <span class="car-counter" id="cnt-${i}">1 / ${reviews.length}</span>
+        <button class="car-btn" onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>
+      </div>` : ''}`;
 
     return `
     <div class="card" onclick="toggle(${i})" id="card-${i}">
@@ -739,6 +756,7 @@ function render() {
         ${r0[C.kraj] ? `<span class="badge b-kraj">${r0[C.kraj]}</span>` : ''}
         ${lgbtYes ? '<span class="badge b-lgbt">LGBTQ+ friendly</span>' : ''}
         ${noFees ? '<span class="badge b-nofees">Bez poplatků</span>' : ''}
+        ${hasFees ? '<span class="badge b-fees">Poplatky</span>' : ''}
       </div>
       <div class="detail" id="det-${i}">
         ${web ? `<a href="${web}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
@@ -754,6 +772,15 @@ function render() {
 function toggle(i) {
   document.getElementById('det-' + i).classList.toggle('open');
   document.getElementById('chev-' + i).classList.toggle('open');
+}
+
+// ── Carousel ─────────────────────────────────────────────
+const carPos = {};
+function carMove(id, dir, total) {
+  carPos[id] = ((carPos[id] || 0) + dir + total) % total;
+  document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
+  document.querySelectorAll(`#dots-${id} .car-dot`).forEach((d, i) => d.classList.toggle('active', i === carPos[id]));
+  document.getElementById('cnt-' + id).textContent = `${carPos[id] + 1} / ${total}`;
 }
 
 // ── Init ─────────────────────────────────────────────────
