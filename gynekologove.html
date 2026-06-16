@@ -517,7 +517,7 @@
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
-    body { overflow-x: hidden; }
+    body { overflow-x: hidden; font-size: 16px; }
     header { padding: 0 1rem; }
     .header-inner { gap: 6px; height: 50px; }
     .logo { display: none; }
@@ -924,7 +924,7 @@ function render() {
       </div>`;
     }).join('');
 
-    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
+    const reviewsHtml = `<div class="car-track-wrap" data-id="${i}" data-total="${reviews.length}"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
 
     return `
     <div class="card${lgbtYes ? ' lgbt-card' : ''}" id="card-${i}">
@@ -953,6 +953,7 @@ function render() {
       </div>
     </div>`;
   }).join('');
+  initSwipe();
 }
 
 function toggle(i) {
@@ -965,6 +966,23 @@ const carPos = {};
 function carMove(id, dir, total) {
   carPos[id] = ((carPos[id] || 0) + dir + total) % total;
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
+}
+
+function initSwipe() {
+  document.querySelectorAll('.car-track-wrap').forEach(wrap => {
+    if (wrap._swipe) return;
+    wrap._swipe = true;
+    let startX = 0;
+    wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) < 40) return;
+      const id = +wrap.dataset.id;
+      const total = +wrap.dataset.total;
+      if (total < 2) return;
+      carMove(id, dx < 0 ? 1 : -1, total);
+    }, { passive: true });
+  });
 }
 
 // ── Init ─────────────────────────────────────────────────
