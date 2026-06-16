@@ -574,6 +574,11 @@
         <option value="">LGBTQ+: vše</option>
         <option value="ano">Pouze friendly</option>
       </select>
+      <select id="f-sort" onchange="render()">
+        <option value="pocet">Nejvíce hodnocení</option>
+        <option value="hvezdy">Nejlepší hodnocení</option>
+        <option value="az">A–Z</option>
+      </select>
       <a href="https://docs.google.com/forms/d/12ksXahejlHaKVpLlpbTjAoe_TlXfmYkehc8rq9K0gqc/viewform?edit_requested=true" target="_blank" rel="noopener" class="cta-btn">✏ Vyplň formulář</a>
     </div>
   </div>
@@ -608,15 +613,6 @@
         <button class="sb-toggle" onclick="toggleGroup('poplatky')">Poplatky <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="sb-options" id="grp-poplatky">
           <button class="chip" onclick="toggleChip('poplatky','Ne')">Bez poplatků</button>
-        </div>
-      </div>
-      <div class="sb-group">
-        <button class="sb-toggle" onclick="toggleGroup('pocet')">Počet hodnocení <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="sb-options" id="grp-pocet">
-          <button class="chip" onclick="toggleChip('pocet','2')">2+</button>
-          <button class="chip" onclick="toggleChip('pocet','3')">3+</button>
-          <button class="chip" onclick="toggleChip('pocet','5')">5+</button>
-          <button class="chip" onclick="toggleChip('pocet','10')">10+</button>
         </div>
       </div>
       <div class="sb-group">
@@ -676,7 +672,7 @@ const C = {
 // ── State ────────────────────────────────────────────────
 let data = [];
 let refreshTimer = null;
-const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set(), pocet: new Set() };
+const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set() };
 
 function toggleGroup(id) {
   const opts = document.getElementById('grp-' + id);
@@ -809,13 +805,18 @@ function render() {
     groupMap.get(key).push(r);
   });
 
-  let groups = [...groupMap.values()].sort((a, b) => b.length - a.length);
-
-  // Filtr počtu hodnocení
-  if (chipFilters.pocet.size) {
-    const min = Math.min(...[...chipFilters.pocet].map(Number));
-    groups = groups.filter(g => g.length >= min);
-  }
+  const sort = document.getElementById('f-sort').value;
+  let groups = [...groupMap.values()].sort((a, b) => {
+    if (sort === 'hvezdy') {
+      const avg = g => g.reduce((s, r) => s + (parseInt(r[C.hvezdy]) || 0), 0) / g.length;
+      return avg(b) - avg(a);
+    }
+    if (sort === 'az') {
+      const name = g => ((g[0][C.prijmeni]||'') + (g[0][C.krestni]||'')).toLowerCase().trim();
+      return name(a).localeCompare(name(b), 'cs');
+    }
+    return b.length - a.length;
+  });
 
   // Filtr hvězd podle průměru skupiny
   if (minHvezdy) {
