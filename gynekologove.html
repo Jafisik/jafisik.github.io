@@ -964,7 +964,7 @@ function toggle(i) {
 // ── Carousel ─────────────────────────────────────────────
 const carPos = {};
 function carMove(id, dir, total) {
-  carPos[id] = ((carPos[id] || 0) + dir + total) % total;
+  carPos[id] = Math.max(0, Math.min(total - 1, (carPos[id] || 0) + dir));
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
 }
 
