@@ -636,7 +636,7 @@ function render() {
     groupMap.get(key).push(r);
   });
 
-  let groups = [...groupMap.values()];
+  let groups = [...groupMap.values()].sort((a, b) => b.length - a.length);
 
   // Filtr hvězd podle průměru skupiny
   if (minHvezdy) {
