@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { max-width: 100vw; overflow-x: hidden; }
+
   :root {
     --bg: #f7f5f2;
     --surface: #ffffff;
@@ -152,6 +155,7 @@
   }
 
   .filter-inner::-webkit-scrollbar { display: none; }
+  .filter-inner #f-kraj { margin-left: auto; }
 
   select {
     padding: 6px 10px;
@@ -521,7 +525,8 @@
     .ig-link span { display: none; }
     .live-badge { display: none; }
     .filter-bar { padding: 0 1rem; }
-    .filter-inner { gap: 6px; }
+    .filter-inner { gap: 6px; flex-wrap: wrap; }
+    .filter-inner #f-kraj { margin-left: 0; }
     select { font-size: 12px; padding: 5px 8px; padding-right: 20px; }
     .cta-btn { font-size: 12px; padding: 5px 10px; }
     .layout { flex-direction: column; padding: 0 1rem; gap: 10px; }
@@ -564,7 +569,7 @@
   <div class="filter-bar">
     <div class="filter-inner">
       <a href="https://docs.google.com/forms/d/12ksXahejlHaKVpLlpbTjAoe_TlXfmYkehc8rq9K0gqc/viewform?edit_requested=true" target="_blank" rel="noopener" class="cta-btn">✏ Vyplň formulář</a>
-      <select id="f-kraj" onchange="updateFilterState(); render()" style="margin-left: auto"><option value="">Všechny kraje</option></select>
+      <select id="f-kraj" onchange="updateFilterState(); render()"><option value="">Všechny kraje</option></select>
       <select id="f-pohlavi" onchange="updateFilterState(); render()">
         <option value="">Pohlaví: vše</option>
         <option value="žena">Žena</option>
