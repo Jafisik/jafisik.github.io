@@ -69,7 +69,7 @@
     flex-shrink: 0;
   }
 
-  .logo span { color: var(--accent); }
+  .logo span { color: #335b40; }
 
   .search-wrap {
     flex: 1;
@@ -611,6 +611,15 @@
         </div>
       </div>
       <div class="sb-group">
+        <button class="sb-toggle" onclick="toggleGroup('pocet')">Počet hodnocení <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sb-options" id="grp-pocet">
+          <button class="chip" onclick="toggleChip('pocet','2')">2+</button>
+          <button class="chip" onclick="toggleChip('pocet','3')">3+</button>
+          <button class="chip" onclick="toggleChip('pocet','5')">5+</button>
+          <button class="chip" onclick="toggleChip('pocet','10')">10+</button>
+        </div>
+      </div>
+      <div class="sb-group">
         <button class="sb-toggle" onclick="toggleGroup('hac')">Postoj k HA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="sb-options" id="grp-hac">
           <button class="chip" onclick="toggleChip('hac','Nepodporuje')">Nepodporuje</button>
@@ -667,7 +676,7 @@ const C = {
 // ── State ────────────────────────────────────────────────
 let data = [];
 let refreshTimer = null;
-const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set() };
+const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set(), pocet: new Set() };
 
 function toggleGroup(id) {
   const opts = document.getElementById('grp-' + id);
@@ -801,6 +810,12 @@ function render() {
   });
 
   let groups = [...groupMap.values()].sort((a, b) => b.length - a.length);
+
+  // Filtr počtu hodnocení
+  if (chipFilters.pocet.size) {
+    const min = Math.min(...[...chipFilters.pocet].map(Number));
+    groups = groups.filter(g => g.length >= min);
+  }
 
   // Filtr hvězd podle průměru skupiny
   if (minHvezdy) {
