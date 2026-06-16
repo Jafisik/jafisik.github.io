@@ -300,6 +300,16 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
 
+  .card.lgbt-card {
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+                linear-gradient(90deg, #e8445a, #f4913a, #f6d04d, #3db87a, #4b9cf5, #a259f7) border-box;
+    border: 1.5px solid transparent;
+  }
+
+  .card.lgbt-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
   .card-top {
     display: flex;
     align-items: flex-start;
@@ -850,15 +860,16 @@ function render() {
           <span class="review-num">${hvezdy} z 5</span>
           ${reviews.length > 1 ? `<button class="car-btn" ${ri === reviews.length - 1 ? 'disabled' : ''} onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
         </div>
+        ${reviews.length > 1 ? `<div class="car-dots-row">${reviews.map((_,di) => `<span class="car-dot${di===ri?' active':''}"></span>`).join('')}</div>` : ''}
         ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
         ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
       </div>`;
     }).join('');
 
-    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>${reviews.length > 1 ? `<div class="car-dots-row" id="dots-${i}">${reviews.map((_,di) => `<span class="car-dot${di===0?' active':''}"></span>`).join('')}</div>` : ''}`;
+    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
 
     return `
-    <div class="card" onclick="toggle(${i})" id="card-${i}">
+    <div class="card${lgbtYes ? ' lgbt-card' : ''}" onclick="toggle(${i})" id="card-${i}">
       <div class="card-top">
         <div class="avatar ${pohlaviLow === 'žena' ? 'f' : pohlaviLow === 'muž' ? 'm' : ''}">${initials || '?'}</div>
         <div class="card-info">
@@ -895,8 +906,6 @@ const carPos = {};
 function carMove(id, dir, total) {
   carPos[id] = ((carPos[id] || 0) + dir + total) % total;
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
-  const dotsEl = document.getElementById('dots-' + id);
-  if (dotsEl) dotsEl.querySelectorAll('.car-dot').forEach((d, i) => d.classList.toggle('active', i === carPos[id]));
 }
 
 // ── Init ─────────────────────────────────────────────────
