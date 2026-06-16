@@ -724,23 +724,18 @@ function render() {
 
       return `<div class="car-slide">
         <div class="review-header">
-          <span class="review-label">Hodnocení ${ri + 1}/${reviews.length}</span>
+          ${reviews.length > 1 ? `<button class="car-btn" onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>` : ''}
+          <span class="review-label">Hodnocení ${ri + 1} / ${reviews.length}</span>
           <span class="stars" style="font-size:13px">${rStars}</span>
           <span class="review-num">${hvezdy}/5</span>
+          ${reviews.length > 1 ? `<button class="car-btn" onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
         </div>
         ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
         ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
       </div>`;
     }).join('');
 
-    const reviewsHtml = `
-      ${reviews.length > 1 ? `<div class="car-nav">
-        <button class="car-btn" onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>
-        <div class="car-dots" id="dots-${i}">${reviews.map((_,di) => `<div class="car-dot${di===0?' active':''}"></div>`).join('')}</div>
-        <span class="car-counter" id="cnt-${i}">1/${reviews.length}</span>
-        <button class="car-btn" onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>
-      </div>` : ''}
-      <div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
+    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
 
     return `
     <div class="card" onclick="toggle(${i})" id="card-${i}">
@@ -780,8 +775,6 @@ const carPos = {};
 function carMove(id, dir, total) {
   carPos[id] = ((carPos[id] || 0) + dir + total) % total;
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
-  document.querySelectorAll(`#dots-${id} .car-dot`).forEach((d, i) => d.classList.toggle('active', i === carPos[id]));
-  document.getElementById('cnt-' + id).textContent = `${carPos[id] + 1}/${total}`;
 }
 
 // ── Init ─────────────────────────────────────────────────
