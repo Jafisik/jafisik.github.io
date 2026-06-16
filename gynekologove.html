@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hodnocení gynekologů</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface2: #f0ede9;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,0,0,0.18);
+    --text: #1a1916;
+    --text-muted: #7a7670;
+    --text-light: #a8a49e;
+    --accent: #c1604a;
+    --accent-light: #f5ebe8;
+    --green: #3b6d11;
+    --green-bg: #eaf3de;
+    --purple: #4a3b9c;
+    --purple-bg: #eeedfe;
+    --red: #8b2020;
+    --red-bg: #fceaea;
+    --teal: #0d5c45;
+    --teal-bg: #e1f5ee;
+    --star: #d4880a;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 56px;
+  }
+
+  .logo {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .search-wrap {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+  }
+
+  #search {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+
+  #search:focus {
+    outline: none;
+    border-color: var(--border-hover);
+    background: var(--surface);
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #639922;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  .dot.err { background: var(--accent); animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── Filters ── */
+  .filter-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+  }
+
+  .filter-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    padding: 10px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-inner::-webkit-scrollbar { display: none; }
+
+  select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+
+  select:focus { outline: none; border-color: var(--border-hover); }
+  select.active { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    max-width: 860px;
+    margin: 1.25rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .stat strong {
+    display: block;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  /* ── Setup screen ── */
+  #setup-screen {
+    max-width: 560px;
+    margin: 4rem auto;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .setup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: left;
+  }
+
+  .setup-card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .setup-card ol {
+    padding-left: 1.2rem;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 2;
+    margin-bottom: 1.25rem;
+  }
+
+  .setup-card ol li b { color: var(--text); font-weight: 500; }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .input-row input {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.15s;
+  }
+
+  .input-row input:focus { outline: none; border-color: var(--border-hover); background: var(--surface); }
+
+  .btn {
+    padding: 9px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover { opacity: 0.88; }
+
+  .setup-status {
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 18px;
+    color: var(--text-muted);
+  }
+
+  .setup-status.ok { color: var(--green); }
+  .setup-status.err { color: var(--red); }
+
+  /* ── Card list ── */
+  #main {
+    display: none;
+  }
+
+  .list {
+    max-width: 860px;
+    margin: 1rem auto 3rem;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+    background: var(--surface2);
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .avatar.f { background: var(--accent-light); color: var(--accent); }
+  .avatar.m { background: var(--teal-bg); color: var(--teal); }
+
+  .card-info { flex: 1; min-width: 0; }
+
+  .card-name {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .card-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stars {
+    font-size: 14px;
+    margin-top: 4px;
+    letter-spacing: 1px;
+    color: var(--star);
+  }
+
+  .stars .empty-star { color: var(--border-hover); }
+
+  .chevron {
+    color: var(--text-light);
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    margin-top: 2px;
+  }
+
+  .chevron.open { transform: rotate(180deg); }
+
+  .badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .b-kraj { background: var(--teal-bg); color: var(--teal); }
+  .b-lgbt { background: var(--purple-bg); color: var(--purple); }
+  .b-nofees { background: var(--green-bg); color: var(--green); }
+  .b-fees { background: var(--red-bg); color: var(--red); }
+
+  /* ── Detail panel ── */
+  .detail {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail.open { display: block; }
+
+  .detail a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+
+  .detail a:hover { text-decoration: underline; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+  }
+
+  .di-label {
+    font-size: 11px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .di-val {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .detail-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-section .di-label { margin-bottom: 4px; }
+
+  .detail-section .di-val {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── Empty / loading ── */
+  .empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .empty svg { display: block; margin: 0 auto 12px; color: var(--text-light); }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .header-inner { gap: 8px; }
+    .logo { display: none; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 8px; }
+    .stat { padding: 6px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <h2>Napoj na Google Sheets</h2>
+    <ol>
+      <li>Otevři svůj Google Sheet s odpověďmi</li>
+      <li>Klikni <b>Soubor → Sdílet → Publikovat na webu</b></li>
+      <li>Vlevo vyber list s odpověďmi, vpravo <b>CSV</b></li>
+      <li>Klikni Publikovat a zkopíruj odkaz</li>
+    </ol>
+    <div class="input-row">
+      <input type="text" id="sheet-url" placeholder="https://docs.google.com/spreadsheets/d/…/pub?output=csv">
+      <button class="btn" onclick="connect()">Připojit</button>
+    </div>
+    <div class="setup-status" id="setup-status"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main">
+  <header>
+    <div class="header-inner">
+      <div class="logo">gyno<span>radar</span></div>
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render()">
+      </div>
+      <div class="live-badge">
+        <div class="dot" id="dot"></div>
+        <span id="last-update">–</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <select id="f-kraj" onchange="updateFilterState(); render()"><option value="">Všechny kraje</option></select>
+      <select id="f-pohlavi" onchange="updateFilterState(); render()">
+        <option value="">Pohlaví: vše</option>
+        <option value="žena">Žena</option>
+        <option value="muž">Muž</option>
+      </select>
+      <select id="f-hvezdy" onchange="updateFilterState(); render()">
+        <option value="">Hodnocení: vše</option>
+        <option value="5">★★★★★ pouze</option>
+        <option value="4">★★★★+ a výše</option>
+        <option value="3">★★★+ a výše</option>
+      </select>
+      <select id="f-lgbt" onchange="updateFilterState(); render()">
+        <option value="">LGBTQ+: vše</option>
+        <option value="ano">Pouze friendly</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="stats"></div>
+  <div class="list" id="list"></div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────
+// Sem vlož svůj CSV odkaz natvrdo, nebo nech prázdné a použij setup screen:
+const HARDCODED_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTSelfRnIviJBls3glzN80yaw8ArSxhnABi17zstWV36A-YLTNUjdDzHZDLZ-Gs4KVrFa45ueNyKi3/pub?output=csv';
+const REFRESH_INTERVAL_MS = 60 * 1000; // 1 minuta
+
+// ── Sloupce (indexy odpovídají pořadí otázek v dotazníku) ──
+const C = {
+  krestni: 0, prijmeni: 1, ordinace: 2, web: 3, pohlavi: 4,
+  kraj: 5, mesto: 6, vek: 7, poplatky: 8, ceny: 9,
+  prohlidky: 10, komplikace: 11,
+  doktor: 12, sestra: 13, lgbt: 14,
+  vybaveni: 15, vzdel: 16, hvezdy: 17,
+  hac: 18, hac2: 19, hac_deti: 20,
+  bylinky: 21, bylinky2: 22,
+  endo: 23, endo2: 24,
+  pcos: 25, pcos2: 26,
+  vag: 27, vag2: 28,
+  sex: 29, sex2: 30,
+  celostni: 31, celostni2: 32,
+  deti: 33, deti2: 34,
+  rozbory: 35, rozbory2: 36,
+  ivf: 37, ultrazvuk: 38,
+  komunikace: 39, objednani: 40, zaver: 41
+};
+
+// ── State ────────────────────────────────────────────────
+let data = [];
+let sheetUrl = '';
+let refreshTimer = null;
+
+// ── CSV fetch ────────────────────────────────────────────
+async function fetchCSV(url) {
+  const proxies = [
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://thingproxy.freeboard.io/fetch/${url}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  ];
+  let lastErr;
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy, { cache: 'no-store', mode: 'cors' });
+      const text = await res.text();
+      if (text && text.length > 10 && !text.includes('<html')) return text;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('Všechny proxy selhaly');
+}
+
+function parseCSV(text) {
+  const lines = text.replace(/\r/g, '').split('\n');
+  if (!lines.length) return [];
+  const sample = lines[0];
+  const delim = (sample.split('\t').length >= sample.split(',').length) ? '\t' : ',';
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    let row;
+    if (delim === '\t') {
+      row = lines[i].split('\t').map(c => c.replace(/^"|"$/g, '').trim());
+    } else {
+      row = [];
+      let cur = '', inQ = false;
+      for (const ch of lines[i]) {
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+        else cur += ch;
+      }
+      row.push(cur.trim());
+    }
+    if (row[0] || row[1]) rows.push(row);
+  }
+  return rows;
+}
+
+// ── Connect ──────────────────────────────────────────────
+async function connect() {
+  const raw = document.getElementById('sheet-url').value.trim();
+  if (!raw) return;
+
+  const status = document.getElementById('setup-status');
+  status.className = 'setup-status';
+  status.textContent = 'Připojuji…';
+
+  // Pokud vloží celou URL sheetu (ne pub), přeformátuj
+  const idMatch = raw.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  sheetUrl = idMatch
+    ? `https://docs.google.com/spreadsheets/d/${idMatch[1]}/pub?output=csv`
+    : raw;
+
+  try {
+    const text = await fetchCSV(sheetUrl);
+    data = parseCSV(text);
+    if (!data.length) throw new Error('Žádná data – zkontroluj, že sheet je publikován');
+    localStorage.setItem('gyno_url', sheetUrl);
+    status.className = 'setup-status ok';
+    status.textContent = `✓ Načteno ${data.length} záznamů`;
+    setTimeout(launchApp, 400);
+  } catch (e) {
+    status.className = 'setup-status err';
+    status.textContent = '✗ ' + e.message + '. Zkontroluj odkaz a oprávnění.';
+  }
+}
+
+function launchApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  document.getElementById('list').innerHTML = '<div class="empty"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Načítám data…</div>';
+  tick();
+  refreshTimer = setInterval(tick, REFRESH_INTERVAL_MS);
+}
+
+async function tick() {
+  try {
+    const text = await fetchCSV(sheetUrl);
+    const fresh = parseCSV(text);
+    if (fresh.length) {
+      data = fresh;
+      setStatus('ok');
+      populateKraje();
+      render();
+    } else {
+      document.getElementById('list').innerHTML = '<div class="empty">Data jsou prázdná – zkontroluj, že sheet má záznamy od druhého řádku.</div>';
+      setStatus('err');
+    }
+  } catch(e) {
+    document.getElementById('list').innerHTML = '<div class="empty">Nepodařilo se načíst data: ' + e.message + '</div>';
+    setStatus('err');
+  }
+}
+
+function setStatus(state) {
+  const dot = document.getElementById('dot');
+  const ts = document.getElementById('last-update');
+  dot.className = 'dot' + (state === 'err' ? ' err' : '');
+  const now = new Date();
+  ts.textContent = now.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── Kraje select ─────────────────────────────────────────
+let lastKraje = '';
+function populateKraje() {
+  const kraje = [...new Set(data.map(r => r[C.kraj]).filter(Boolean))].sort();
+  const sig = kraje.join(',');
+  if (sig === lastKraje) return;
+  lastKraje = sig;
+  const sel = document.getElementById('f-kraj');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Všechny kraje</option>' +
+    kraje.map(k => `<option value="${k}">${k}</option>`).join('');
+  sel.value = cur;
+}
+
+// ── Filters ──────────────────────────────────────────────
+function updateFilterState() {
+  ['f-kraj','f-pohlavi','f-hvezdy','f-lgbt'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.toggle('active', el.value !== '');
+  });
+}
+
+// ── Render ───────────────────────────────────────────────
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const kraj = document.getElementById('f-kraj').value;
+  const pohlavi = document.getElementById('f-pohlavi').value;
+  const minHvezdy = parseInt(document.getElementById('f-hvezdy').value) || 0;
+  const onlyLgbt = document.getElementById('f-lgbt').value === 'ano';
+
+  const filtered = data.filter(r => {
+    const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
+    if (q && !txt.includes(q)) return false;
+    if (kraj && r[C.kraj] !== kraj) return false;
+    if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
+    if (minHvezdy && (parseInt(r[C.hvezdy]) || 0) < minHvezdy) return false;
+    if (onlyLgbt && !(r[C.lgbt]||'').toLowerCase().includes('ano')) return false;
+    return true;
+  });
+
+  // Stats
+  const avg = filtered.length
+    ? (filtered.reduce((a, r) => a + (parseInt(r[C.hvezdy]) || 0), 0) / filtered.length).toFixed(1)
+    : '–';
+  const lgbtN = filtered.filter(r => (r[C.lgbt]||'').toLowerCase().includes('ano')).length;
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><strong>${filtered.length}</strong>lékařů</div>
+    <div class="stat"><strong>${avg}</strong>průměr hvězd</div>
+    <div class="stat"><strong>${lgbtN}</strong>LGBTQ+ friendly</div>
+  `;
+
+  // List
+  if (!filtered.length) {
+    document.getElementById('list').innerHTML = `
+      <div class="empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6M11 8v6"/></svg>
+        Žádné výsledky neodpovídají filtrům.
+      </div>`;
+    return;
+  }
+
+  document.getElementById('list').innerHTML = filtered.map((r, i) => {
+    const name = [r[C.krestni], r[C.prijmeni]].filter(Boolean).join(' ') || 'Neznámý';
+    const initials = ((r[C.krestni]||'').charAt(0) + (r[C.prijmeni]||'').charAt(0)).toUpperCase();
+    const pohlaviLow = (r[C.pohlavi]||'').toLowerCase();
+    const sub = [r[C.ordinace], r[C.mesto], r[C.kraj]].filter(Boolean).join(' · ');
+    const hvezdy = Math.min(parseInt(r[C.hvezdy]) || 0, 5);
+    const lgbtYes = (r[C.lgbt]||'').toLowerCase().includes('ano');
+    const noFees = /^ne/i.test(r[C.poplatky]||'');
+    const hasFees = !noFees && r[C.poplatky];
+
+    const starsHtml = '★'.repeat(hvezdy) + `<span class="empty-star">${'★'.repeat(5 - hvezdy)}</span>`;
+
+    // Grid fields
+    const grid = [
+      { l: 'Věk', v: r[C.vek] },
+      { l: 'Pohlaví', v: r[C.pohlavi] },
+      { l: 'Poplatky', v: r[C.poplatky] },
+      { l: 'Ceny', v: r[C.ceny] },
+      { l: 'Objednávací lhůta', v: r[C.objednani] },
+      { l: 'Vybavení ordinace', v: r[C.vybaveni] },
+      { l: 'Vzdělávání v novinkách', v: r[C.vzdel] },
+      { l: '3D ultrazvuk', v: r[C.ultrazvuk] },
+    ].filter(f => f.v);
+
+    // Text sections
+    const sections = [
+      { l: 'Osobnost lékaře/ky', v: r[C.doktor] },
+      { l: 'Sestra', v: r[C.sestra] },
+      { l: 'Komplikace řešené v ordinaci', v: r[C.komplikace] },
+      { l: 'Hormonální antikoncepce', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
+      { l: 'HA a plánování dětí', v: r[C.hac_deti] },
+      { l: 'Bylinky a doplňky stravy', v: [r[C.bylinky], r[C.bylinky2]].filter(Boolean).join(' ') },
+      { l: 'Endometrióza', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
+      { l: 'PCOS', v: [r[C.pcos], r[C.pcos2]].filter(Boolean).join(' ') },
+      { l: 'Vaginální infekce', v: [r[C.vag], r[C.vag2]].filter(Boolean).join(' ') },
+      { l: 'Problémy se sexem', v: [r[C.sex], r[C.sex2]].filter(Boolean).join(' ') },
+      { l: 'Celostní přístup ke zdraví', v: [r[C.celostni], r[C.celostni2]].filter(Boolean).join(' ') },
+      { l: 'Otázky na děti / plánování', v: [r[C.deti], r[C.deti2]].filter(Boolean).join(' ') },
+      { l: 'Rozbory a stěry', v: [r[C.rozbory], r[C.rozbory2]].filter(Boolean).join(' ') },
+      { l: 'Komunikace při vyšetření', v: r[C.komunikace] },
+      { l: 'Pomoc při snaze otěhotnět', v: r[C.ivf] },
+      { l: 'Závěr a poznámky', v: r[C.zaver] },
+    ].filter(f => f.v);
+
+    return `
+    <div class="card" onclick="toggle(${i})" id="card-${i}">
+      <div class="card-top">
+        <div class="avatar ${pohlaviLow === 'žena' ? 'f' : pohlaviLow === 'muž' ? 'm' : ''}">${initials || '?'}</div>
+        <div class="card-info">
+          <div class="card-name">${name}</div>
+          ${sub ? `<div class="card-sub">${sub}</div>` : ''}
+          <div class="stars">${starsHtml}</div>
+        </div>
+        <svg class="chevron" id="chev-${i}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="badges">
+        ${r[C.kraj] ? `<span class="badge b-kraj">${r[C.kraj]}</span>` : ''}
+        ${lgbtYes ? '<span class="badge b-lgbt">LGBTQ+ friendly</span>' : ''}
+        ${noFees ? '<span class="badge b-nofees">Bez poplatků</span>' : ''}
+        ${hasFees ? `<span class="badge b-fees">Platí: ${r[C.poplatky]}</span>` : ''}
+      </div>
+      <div class="detail" id="det-${i}">
+        ${r[C.web] ? `<a href="${r[C.web]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Web ordinace
+        </a>` : ''}
+        ${grid.length ? `<div class="detail-grid">${grid.map(f => `
+          <div>
+            <div class="di-label">${f.l}</div>
+            <div class="di-val">${f.v}</div>
+          </div>`).join('')}
+        </div>` : ''}
+        ${sections.map(f => `
+          <div class="detail-section">
+            <div class="di-label">${f.l}</div>
+            <div class="di-val">${f.v}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(i) {
+  document.getElementById('det-' + i).classList.toggle('open');
+  document.getElementById('chev-' + i).classList.toggle('open');
+}
+
+// ── Init ─────────────────────────────────────────────────
+(function() {
+  const saved = HARDCODED_URL || localStorage.getItem('gyno_url');
+  if (saved) {
+    sheetUrl = saved;
+    launchApp();
+  }
+})();
+</script>
+</body>
+</html>
