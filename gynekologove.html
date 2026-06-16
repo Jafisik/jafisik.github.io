@@ -301,9 +301,13 @@
   }
 
   .card.lgbt-card {
-    background: linear-gradient(var(--surface), var(--surface)) padding-box,
-                linear-gradient(90deg, #e8445a, #f4913a, #f6d04d, #3db87a, #4b9cf5, #a259f7) border-box;
-    border: 1.5px solid transparent;
+    background: linear-gradient(135deg,
+      rgba(232,68,90,0.07) 0%,
+      rgba(244,145,58,0.07) 20%,
+      rgba(246,208,77,0.07) 40%,
+      rgba(61,184,122,0.07) 60%,
+      rgba(75,156,245,0.07) 80%,
+      rgba(162,89,247,0.07) 100%);
   }
 
   .card.lgbt-card:hover {
@@ -464,7 +468,7 @@
   .car-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .car-btn:hover:not(:disabled) { border-color: var(--border-hover); }
   .car-btn:disabled { opacity: 0.3; cursor: default; }
-  .car-dots-row { display: flex; justify-content: center; gap: 5px; margin-top: 12px; }
+  .car-dots-row { display: flex; justify-content: center; gap: 5px; margin-top: 10px; margin-bottom: 1em; }
   .car-dots { display: flex; gap: 5px; }
   .car-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hover); transition: background .2s; }
   .car-dot.active { background: var(--accent); }
@@ -602,6 +606,7 @@
         <button class="sb-toggle" onclick="toggleGroup('lgbtq')">LGBTQ+ <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="sb-options" id="grp-lgbtq">
           <button class="chip" onclick="toggleChip('lgbtq','ano')">Friendly</button>
+          <button class="chip" onclick="toggleChip('lgbtq','ne')">Není friendly</button>
         </div>
       </div>
     </aside>
@@ -759,6 +764,8 @@ function render() {
       const v = (r[col]||'').trim();
       if (cat === 'poplatky') {
         if (![...vals].some(() => /^ne/i.test(v))) return false;
+      } else if (cat === 'lgbtq') {
+        if (![...vals].some(sel => sel === 'ne' ? v.toLowerCase() === 'ne' : v.toLowerCase().includes(sel))) return false;
       } else {
         if (![...vals].some(sel => v.toLowerCase().includes(sel.toLowerCase()))) return false;
       }
@@ -838,7 +845,7 @@ function render() {
         { l: 'Sestra', v: r[C.sestra] },
         { l: 'Komplikace řešené v ordinaci', v: r[C.komplikace] },
         { l: 'Hormonální antikoncepce', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
-        { l: 'HA a plánování dětí', v: r[C.hac_deti] },
+        { l: 'Vysazení hormonální antikoncepce a plánování dětí', v: r[C.hac_deti] },
         { l: 'Bylinky a doplňky stravy', v: [r[C.bylinky], r[C.bylinky2]].filter(Boolean).join(' ') },
         { l: 'Endometrióza', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
         { l: 'PCOS', v: [r[C.pcos], r[C.pcos2]].filter(Boolean).join(' ') },
