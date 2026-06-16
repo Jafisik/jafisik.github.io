@@ -17,8 +17,8 @@
     --text: #1a1916;
     --text-muted: #7a7670;
     --text-light: #a8a49e;
-    --accent: #c1604a;
-    --accent-light: #f5ebe8;
+    --accent: #335b40;
+    --accent-light: #e8f0ea;
     --green: #3b6d11;
     --green-bg: #eaf3de;
     --purple: #4a3b9c;
@@ -498,12 +498,6 @@
   .chip:hover { border-color: var(--border-hover); }
   .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  @media (max-width: 650px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; position: static; }
-    .sb-options { flex-direction: row; flex-wrap: wrap; }
-  }
-
   .review-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
   .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
@@ -512,7 +506,8 @@
   .ig-link:hover { color: var(--text); }
 
   /* ── Responsive ── */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
     header { padding: 0 1rem; }
     .header-inner { gap: 6px; height: 50px; }
     .logo { display: none; }
@@ -522,9 +517,12 @@
     .filter-inner { gap: 6px; }
     select { font-size: 12px; padding: 5px 8px; padding-right: 20px; }
     .cta-btn { font-size: 12px; padding: 5px 10px; }
-    .layout { padding: 0 1rem; gap: 10px; }
+    .layout { flex-direction: column; padding: 0 1rem; gap: 10px; }
+    .sidebar { width: 100%; position: static; }
+    .sb-options { flex-direction: row; flex-wrap: wrap; }
     .main-content .list { padding: 0; }
     .main-content .stats-bar { padding: 0; gap: 6px; }
+    .stats-row { flex-wrap: wrap; }
     .stat { padding: 5px 10px; font-size: 12px; }
     .stat strong { font-size: 16px; }
     .card { padding: 12px 14px; }
