@@ -458,23 +458,7 @@
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
-<div id="setup-screen">
-  <div class="setup-card">
-    <h2>Napoj na Google Sheets</h2>
-    <ol>
-      <li>Otevři svůj Google Sheet s odpověďmi</li>
-      <li>Klikni <b>Soubor → Sdílet → Publikovat na webu</b></li>
-      <li>Vlevo vyber list s odpověďmi, vpravo <b>CSV</b></li>
-      <li>Klikni Publikovat a zkopíruj odkaz</li>
-    </ol>
-    <div class="input-row">
-      <input type="text" id="sheet-url" placeholder="https://docs.google.com/spreadsheets/d/…/pub?output=csv">
-      <button class="btn" onclick="connect()">Připojit</button>
-    </div>
-    <div class="setup-status" id="setup-status"></div>
-  </div>
-</div>
+<div id="setup-screen" style="display:none"></div>
 
 <!-- MAIN APP -->
 <div id="main">
@@ -519,9 +503,7 @@
 
 <script>
 // ── Config ──────────────────────────────────────────────
-// Sem vlož svůj CSV odkaz natvrdo, nebo nech prázdné a použij setup screen:
-const HARDCODED_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTSelfRnIviJBls3glzN80yaw8ArSxhnABi17zstWV36A-YLTNUjdDzHZDLZ-Gs4KVrFa45ueNyKi3/pub?output=csv';
-const REFRESH_INTERVAL_MS = 60 * 1000; // 1 minuta
+const REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minut
 
 // ── Sloupce (indexy odpovídají pořadí otázek v dotazníku) ──
 const C = {
@@ -545,108 +527,49 @@ const C = {
 
 // ── State ────────────────────────────────────────────────
 let data = [];
-let sheetUrl = '';
 let refreshTimer = null;
 
-// ── CSV fetch ────────────────────────────────────────────
-async function fetchCSV(url) {
-  const proxies = [
-    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-    `https://thingproxy.freeboard.io/fetch/${url}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  ];
-  let lastErr;
-  for (const proxy of proxies) {
-    try {
-      const res = await fetch(proxy, { cache: 'no-store', mode: 'cors' });
-      const text = await res.text();
-      if (text && text.length > 10 && !text.includes('<html')) return text;
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr || new Error('Všechny proxy selhaly');
-}
-
-function parseCSV(text) {
-  const lines = text.replace(/\r/g, '').split('\n');
-  if (!lines.length) return [];
-  const sample = lines[0];
-  const delim = (sample.split('\t').length >= sample.split(',').length) ? '\t' : ',';
-  const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    let row;
-    if (delim === '\t') {
-      row = lines[i].split('\t').map(c => c.replace(/^"|"$/g, '').trim());
-    } else {
-      row = [];
-      let cur = '', inQ = false;
-      for (const ch of lines[i]) {
-        if (ch === '"') { inQ = !inQ; }
-        else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
-        else cur += ch;
-      }
-      row.push(cur.trim());
-    }
-    if (row[0] || row[1]) rows.push(row);
-  }
-  return rows;
-}
-
-// ── Connect ──────────────────────────────────────────────
-async function connect() {
-  const raw = document.getElementById('sheet-url').value.trim();
-  if (!raw) return;
-
-  const status = document.getElementById('setup-status');
-  status.className = 'setup-status';
-  status.textContent = 'Připojuji…';
-
-  // Pokud vloží celou URL sheetu (ne pub), přeformátuj
-  const idMatch = raw.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
-  sheetUrl = idMatch
-    ? `https://docs.google.com/spreadsheets/d/${idMatch[1]}/pub?output=csv`
-    : raw;
-
-  try {
-    const text = await fetchCSV(sheetUrl);
-    data = parseCSV(text);
-    if (!data.length) throw new Error('Žádná data – zkontroluj, že sheet je publikován');
-    localStorage.setItem('gyno_url', sheetUrl);
-    status.className = 'setup-status ok';
-    status.textContent = `✓ Načteno ${data.length} záznamů`;
-    setTimeout(launchApp, 400);
-  } catch (e) {
-    status.className = 'setup-status err';
-    status.textContent = '✗ ' + e.message + '. Zkontroluj odkaz a oprávnění.';
-  }
+// ── Fetch data.json ───────────────────────────────────────
+async function fetchData() {
+  const res = await fetch('/data.json');
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
 }
 
 function launchApp() {
-  document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('main').style.display = 'block';
-  document.getElementById('list').innerHTML = '<div class="empty"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Načítám data…</div>';
+
+  const cached = localStorage.getItem('gyno_data');
+  if (cached) {
+    try {
+      data = JSON.parse(cached);
+      populateKraje();
+      render();
+      setStatus('ok');
+    } catch(e) { localStorage.removeItem('gyno_data'); }
+  } else {
+    document.getElementById('list').innerHTML = '<div class="empty"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Načítám data…</div>';
+  }
+
   tick();
   refreshTimer = setInterval(tick, REFRESH_INTERVAL_MS);
 }
 
 async function tick() {
   try {
-    const text = await fetchCSV(sheetUrl);
-    const fresh = parseCSV(text);
+    const fresh = await fetchData();
     if (fresh.length) {
       data = fresh;
+      localStorage.setItem('gyno_data', JSON.stringify(data));
       setStatus('ok');
       populateKraje();
       render();
     } else {
-      document.getElementById('list').innerHTML = '<div class="empty">Data jsou prázdná – zkontroluj, že sheet má záznamy od druhého řádku.</div>';
+      if (!data.length) document.getElementById('list').innerHTML = '<div class="empty">data.json je prázdné.</div>';
       setStatus('err');
     }
   } catch(e) {
-    document.getElementById('list').innerHTML = '<div class="empty">Nepodařilo se načíst data: ' + e.message + '</div>';
+    if (!data.length) document.getElementById('list').innerHTML = '<div class="empty">Nepodařilo se načíst data: ' + e.message + '</div>';
     setStatus('err');
   }
 }
@@ -809,13 +732,7 @@ function toggle(i) {
 }
 
 // ── Init ─────────────────────────────────────────────────
-(function() {
-  const saved = HARDCODED_URL || localStorage.getItem('gyno_url');
-  if (saved) {
-    sheetUrl = saved;
-    launchApp();
-  }
-})();
+launchApp();
 </script>
 </body>
 </html>
