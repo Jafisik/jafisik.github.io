@@ -18,7 +18,7 @@ jobs:
           python3 << 'EOF'
           import csv, json, urllib.request, io
 
-          url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTSelfRnIviJBls3glzN80yaw8ArSxhnABi17zstWV36A-YLTNUjdDzHZDLZ-Gs4KVrFa45ueNyKi3/pub?output=csv'
+          url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQCA690SNbOz6bIiFswpqi9P0VduN5kfXouFWiEhHTgB5B0UX_MFfsj0jzpbsn43i_cI5HbIpDAQaO7/pub?output=csv'
 
           with urllib.request.urlopen(url) as r:
               content = r.read().decode('utf-8')
