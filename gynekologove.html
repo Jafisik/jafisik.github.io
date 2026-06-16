@@ -452,7 +452,9 @@
   .car-slide { min-width: 100%; padding: 4px 0; }
   .car-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; }
   .car-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .car-btn:hover { border-color: var(--border-hover); }
+  .car-btn:hover:not(:disabled) { border-color: var(--border-hover); }
+  .car-btn:disabled { opacity: 0.3; cursor: default; }
+  .car-dots-row { display: flex; justify-content: center; gap: 5px; margin-top: 12px; }
   .car-dots { display: flex; gap: 5px; }
   .car-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hover); transition: background .2s; }
   .car-dot.active { background: var(--accent); }
@@ -571,6 +573,27 @@
           <button class="chip" onclick="toggleChip('poplatky','Ne')">Bez poplatků</button>
         </div>
       </div>
+      <div class="sb-group">
+        <button class="sb-toggle" onclick="toggleGroup('hac')">Postoj k HA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sb-options" id="grp-hac">
+          <button class="chip" onclick="toggleChip('hac','Nepodporuje')">Nepodporuje</button>
+          <button class="chip" onclick="toggleChip('hac','Neutrální')">Neutrální</button>
+          <button class="chip" onclick="toggleChip('hac','Podporuje')">Podporuje</button>
+        </div>
+      </div>
+      <div class="sb-group">
+        <button class="sb-toggle" onclick="toggleGroup('ultrazvuk')">3D ultrazvuk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sb-options" id="grp-ultrazvuk">
+          <button class="chip" onclick="toggleChip('ultrazvuk','Má 3D')">Má 3D</button>
+          <button class="chip" onclick="toggleChip('ultrazvuk','Posílá jinam')">Posílá jinam</button>
+        </div>
+      </div>
+      <div class="sb-group">
+        <button class="sb-toggle" onclick="toggleGroup('lgbtq')">LGBTQ+ <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sb-options" id="grp-lgbtq">
+          <button class="chip" onclick="toggleChip('lgbtq','ano')">Friendly</button>
+        </div>
+      </div>
     </aside>
     <div class="main-content">
       <div class="stats-bar" id="stats"></div>
@@ -606,7 +629,7 @@ const C = {
 // ── State ────────────────────────────────────────────────
 let data = [];
 let refreshTimer = null;
-const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set() };
+const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set() };
 
 function toggleGroup(id) {
   const opts = document.getElementById('grp-' + id);
@@ -718,13 +741,14 @@ function render() {
   });
 
   // Chip filtry — AND mezi kategoriemi, OR uvnitř kategorie
+  const colMap = { vek: C.vek, vybaveni: C.vybaveni, vzdel: C.vzdel, poplatky: C.poplatky, hac: C.hac, ultrazvuk: C.ultrazvuk, lgbtq: C.lgbt };
   const chipFiltered = filtered.filter(r => {
     for (const [cat, vals] of Object.entries(chipFilters)) {
       if (!vals.size) continue;
-      const col = { vek: C.vek, vybaveni: C.vybaveni, vzdel: C.vzdel, poplatky: C.poplatky }[cat];
+      const col = colMap[cat];
       const v = (r[col]||'').trim();
       if (cat === 'poplatky') {
-        if (![...vals].some(sel => /^ne/i.test(v) === /^ne/i.test(sel))) return false;
+        if (![...vals].some(() => /^ne/i.test(v))) return false;
       } else {
         if (![...vals].some(sel => v.toLowerCase().includes(sel.toLowerCase()))) return false;
       }
@@ -820,18 +844,18 @@ function render() {
 
       return `<div class="car-slide">
         <div class="review-header">
-          ${reviews.length > 1 ? `<button class="car-btn" onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>` : ''}
-          <span class="review-label">Hodnocení ${ri + 1}</span>
+          ${reviews.length > 1 ? `<button class="car-btn" ${ri === 0 ? 'disabled' : ''} onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>` : ''}
+          <span class="review-label">Hodnocení ${ri + 1} / ${reviews.length}</span>
           <span class="stars" style="font-size:13px">${rStars}</span>
           <span class="review-num">${hvezdy} z 5</span>
-          ${reviews.length > 1 ? `<button class="car-btn" onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
+          ${reviews.length > 1 ? `<button class="car-btn" ${ri === reviews.length - 1 ? 'disabled' : ''} onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
         </div>
         ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
         ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
       </div>`;
     }).join('');
 
-    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
+    const reviewsHtml = `<div class="car-track-wrap"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>${reviews.length > 1 ? `<div class="car-dots-row" id="dots-${i}">${reviews.map((_,di) => `<span class="car-dot${di===0?' active':''}"></span>`).join('')}</div>` : ''}`;
 
     return `
     <div class="card" onclick="toggle(${i})" id="card-${i}">
@@ -871,6 +895,8 @@ const carPos = {};
 function carMove(id, dir, total) {
   carPos[id] = ((carPos[id] || 0) + dir + total) % total;
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
+  const dotsEl = document.getElementById('dots-' + id);
+  if (dotsEl) dotsEl.querySelectorAll('.car-dot').forEach((d, i) => d.classList.toggle('active', i === carPos[id]));
 }
 
 // ── Init ─────────────────────────────────────────────────
