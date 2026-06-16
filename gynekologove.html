@@ -446,6 +446,13 @@
 
   .empty svg { display: block; margin: 0 auto 12px; color: var(--text-light); }
 
+  /* ── Review items ── */
+  .review-item { padding: 12px 0; }
+  .review-sep { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 16px; }
+  .review-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+
   /* ── Responsive ── */
   @media (max-width: 600px) {
     .header-inner { gap: 8px; }
@@ -617,25 +624,42 @@ function render() {
     if (q && !txt.includes(q)) return false;
     if (kraj && r[C.kraj] !== kraj) return false;
     if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
-    if (minHvezdy && (parseInt(r[C.hvezdy]) || 0) < minHvezdy) return false;
     if (onlyLgbt && !(r[C.lgbt]||'').toLowerCase().includes('ano')) return false;
     return true;
   });
 
+  // Seskup podle jména doktora
+  const groupMap = new Map();
+  filtered.forEach(r => {
+    const key = ((r[C.krestni]||'').trim() + ' ' + (r[C.prijmeni]||'').trim()).toLowerCase().replace(/\s+/g, ' ');
+    if (!groupMap.has(key)) groupMap.set(key, []);
+    groupMap.get(key).push(r);
+  });
+
+  let groups = [...groupMap.values()];
+
+  // Filtr hvězd podle průměru skupiny
+  if (minHvezdy) {
+    groups = groups.filter(reviews => {
+      const avg = reviews.reduce((a, r) => a + (parseInt(r[C.hvezdy]) || 0), 0) / reviews.length;
+      return avg >= minHvezdy;
+    });
+  }
+
   // Stats
-  const avg = filtered.length
-    ? (filtered.reduce((a, r) => a + (parseInt(r[C.hvezdy]) || 0), 0) / filtered.length).toFixed(1)
-    : '–';
-  const lgbtN = filtered.filter(r => (r[C.lgbt]||'').toLowerCase().includes('ano')).length;
+  const totalReviews = groups.reduce((a, g) => a + g.length, 0);
+  const allStars = groups.flatMap(g => g.map(r => parseInt(r[C.hvezdy]) || 0));
+  const avg = allStars.length ? (allStars.reduce((a, b) => a + b, 0) / allStars.length).toFixed(1) : '–';
+  const lgbtN = groups.filter(g => g.some(r => (r[C.lgbt]||'').toLowerCase().includes('ano'))).length;
 
   document.getElementById('stats').innerHTML = `
-    <div class="stat"><strong>${filtered.length}</strong>lékařů</div>
+    <div class="stat"><strong>${groups.length}</strong>lékařů</div>
+    <div class="stat"><strong>${totalReviews}</strong>hodnocení</div>
     <div class="stat"><strong>${avg}</strong>průměr hvězd</div>
     <div class="stat"><strong>${lgbtN}</strong>LGBTQ+ friendly</div>
   `;
 
-  // List
-  if (!filtered.length) {
+  if (!groups.length) {
     document.getElementById('list').innerHTML = `
       <div class="empty">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6M11 8v6"/></svg>
@@ -644,49 +668,61 @@ function render() {
     return;
   }
 
-  document.getElementById('list').innerHTML = filtered.map((r, i) => {
-    const name = [r[C.krestni], r[C.prijmeni]].filter(Boolean).join(' ') || 'Neznámý';
-    const initials = ((r[C.krestni]||'').charAt(0) + (r[C.prijmeni]||'').charAt(0)).toUpperCase();
-    const pohlaviLow = (r[C.pohlavi]||'').toLowerCase();
-    const sub = [r[C.ordinace], r[C.mesto], r[C.kraj]].filter(Boolean).join(' · ');
-    const hvezdy = Math.min(parseInt(r[C.hvezdy]) || 0, 5);
-    const lgbtYes = (r[C.lgbt]||'').toLowerCase().includes('ano');
-    const noFees = /^ne/i.test(r[C.poplatky]||'');
-    const hasFees = !noFees && r[C.poplatky];
+  document.getElementById('list').innerHTML = groups.map((reviews, i) => {
+    const r0 = reviews[0];
+    const name = [r0[C.krestni], r0[C.prijmeni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
+    const initials = ((r0[C.krestni]||'').trim().charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
+    const pohlaviLow = (r0[C.pohlavi]||'').toLowerCase();
+    const sub = [r0[C.ordinace], r0[C.mesto], r0[C.kraj]].filter(Boolean).join(' · ');
+    const avgStars = reviews.reduce((a, r) => a + (parseInt(r[C.hvezdy]) || 0), 0) / reviews.length;
+    const avgRounded = Math.min(Math.round(avgStars), 5);
+    const starsHtml = '★'.repeat(avgRounded) + `<span class="empty-star">${'★'.repeat(5 - avgRounded)}</span>`;
+    const lgbtYes = reviews.some(r => (r[C.lgbt]||'').toLowerCase().includes('ano'));
+    const noFees = reviews.some(r => /^ne/i.test(r[C.poplatky]||''));
+    const web = reviews.map(r => r[C.web]).find(w => w?.trim());
 
-    const starsHtml = '★'.repeat(hvezdy) + `<span class="empty-star">${'★'.repeat(5 - hvezdy)}</span>`;
+    const reviewsHtml = reviews.map((r, ri) => {
+      const hvezdy = Math.min(parseInt(r[C.hvezdy]) || 0, 5);
+      const rStars = '★'.repeat(hvezdy) + `<span class="empty-star">${'★'.repeat(5 - hvezdy)}</span>`;
+      const grid = [
+        { l: 'Věk lékaře', v: r[C.vek] },
+        { l: 'Pohlaví', v: r[C.pohlavi] },
+        { l: 'Poplatky', v: r[C.poplatky] },
+        { l: 'Ceny', v: r[C.ceny] },
+        { l: 'Objednávací lhůta', v: r[C.objednani] },
+        { l: 'Vybavení ordinace', v: r[C.vybaveni] },
+        { l: 'Vzdělávání v novinkách', v: r[C.vzdel] },
+        { l: '3D ultrazvuk', v: r[C.ultrazvuk] },
+      ].filter(f => f.v);
+      const sections = [
+        { l: 'Osobnost lékaře/ky', v: r[C.doktor] },
+        { l: 'Sestra', v: r[C.sestra] },
+        { l: 'Komplikace řešené v ordinaci', v: r[C.komplikace] },
+        { l: 'Hormonální antikoncepce', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
+        { l: 'HA a plánování dětí', v: r[C.hac_deti] },
+        { l: 'Bylinky a doplňky stravy', v: [r[C.bylinky], r[C.bylinky2]].filter(Boolean).join(' ') },
+        { l: 'Endometrióza', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
+        { l: 'PCOS', v: [r[C.pcos], r[C.pcos2]].filter(Boolean).join(' ') },
+        { l: 'Vaginální infekce', v: [r[C.vag], r[C.vag2]].filter(Boolean).join(' ') },
+        { l: 'Problémy se sexem', v: [r[C.sex], r[C.sex2]].filter(Boolean).join(' ') },
+        { l: 'Celostní přístup ke zdraví', v: [r[C.celostni], r[C.celostni2]].filter(Boolean).join(' ') },
+        { l: 'Otázky na děti / plánování', v: [r[C.deti], r[C.deti2]].filter(Boolean).join(' ') },
+        { l: 'Rozbory a stěry', v: [r[C.rozbory], r[C.rozbory2]].filter(Boolean).join(' ') },
+        { l: 'Komunikace při vyšetření', v: r[C.komunikace] },
+        { l: 'Pomoc při snaze otěhotnět', v: r[C.ivf] },
+        { l: 'Závěr a poznámky', v: r[C.zaver] },
+      ].filter(f => f.v);
 
-    // Grid fields
-    const grid = [
-      { l: 'Věk', v: r[C.vek] },
-      { l: 'Pohlaví', v: r[C.pohlavi] },
-      { l: 'Poplatky', v: r[C.poplatky] },
-      { l: 'Ceny', v: r[C.ceny] },
-      { l: 'Objednávací lhůta', v: r[C.objednani] },
-      { l: 'Vybavení ordinace', v: r[C.vybaveni] },
-      { l: 'Vzdělávání v novinkách', v: r[C.vzdel] },
-      { l: '3D ultrazvuk', v: r[C.ultrazvuk] },
-    ].filter(f => f.v);
-
-    // Text sections
-    const sections = [
-      { l: 'Osobnost lékaře/ky', v: r[C.doktor] },
-      { l: 'Sestra', v: r[C.sestra] },
-      { l: 'Komplikace řešené v ordinaci', v: r[C.komplikace] },
-      { l: 'Hormonální antikoncepce', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
-      { l: 'HA a plánování dětí', v: r[C.hac_deti] },
-      { l: 'Bylinky a doplňky stravy', v: [r[C.bylinky], r[C.bylinky2]].filter(Boolean).join(' ') },
-      { l: 'Endometrióza', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
-      { l: 'PCOS', v: [r[C.pcos], r[C.pcos2]].filter(Boolean).join(' ') },
-      { l: 'Vaginální infekce', v: [r[C.vag], r[C.vag2]].filter(Boolean).join(' ') },
-      { l: 'Problémy se sexem', v: [r[C.sex], r[C.sex2]].filter(Boolean).join(' ') },
-      { l: 'Celostní přístup ke zdraví', v: [r[C.celostni], r[C.celostni2]].filter(Boolean).join(' ') },
-      { l: 'Otázky na děti / plánování', v: [r[C.deti], r[C.deti2]].filter(Boolean).join(' ') },
-      { l: 'Rozbory a stěry', v: [r[C.rozbory], r[C.rozbory2]].filter(Boolean).join(' ') },
-      { l: 'Komunikace při vyšetření', v: r[C.komunikace] },
-      { l: 'Pomoc při snaze otěhotnět', v: r[C.ivf] },
-      { l: 'Závěr a poznámky', v: r[C.zaver] },
-    ].filter(f => f.v);
+      return `<div class="review-item${ri > 0 ? ' review-sep' : ''}">
+        <div class="review-header">
+          <span class="review-label">Hodnocení ${ri + 1}</span>
+          <span class="stars" style="font-size:13px">${rStars}</span>
+          <span class="review-num">${hvezdy}/5</span>
+        </div>
+        ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
+        ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
+      </div>`;
+    }).join('');
 
     return `
     <div class="card" onclick="toggle(${i})" id="card-${i}">
@@ -695,32 +731,21 @@ function render() {
         <div class="card-info">
           <div class="card-name">${name}</div>
           ${sub ? `<div class="card-sub">${sub}</div>` : ''}
-          <div class="stars">${starsHtml}</div>
+          <div class="stars">${starsHtml} <span style="font-size:12px;color:var(--text-muted);margin-left:6px">${avgStars.toFixed(1)} · ${reviews.length} ${reviews.length === 1 ? 'hodnocení' : 'hodnocení'}</span></div>
         </div>
         <svg class="chevron" id="chev-${i}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       <div class="badges">
-        ${r[C.kraj] ? `<span class="badge b-kraj">${r[C.kraj]}</span>` : ''}
+        ${r0[C.kraj] ? `<span class="badge b-kraj">${r0[C.kraj]}</span>` : ''}
         ${lgbtYes ? '<span class="badge b-lgbt">LGBTQ+ friendly</span>' : ''}
         ${noFees ? '<span class="badge b-nofees">Bez poplatků</span>' : ''}
-        ${hasFees ? `<span class="badge b-fees">Platí: ${r[C.poplatky]}</span>` : ''}
       </div>
       <div class="detail" id="det-${i}">
-        ${r[C.web] ? `<a href="${r[C.web]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        ${web ? `<a href="${web}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Web ordinace
         </a>` : ''}
-        ${grid.length ? `<div class="detail-grid">${grid.map(f => `
-          <div>
-            <div class="di-label">${f.l}</div>
-            <div class="di-val">${f.v}</div>
-          </div>`).join('')}
-        </div>` : ''}
-        ${sections.map(f => `
-          <div class="detail-section">
-            <div class="di-label">${f.l}</div>
-            <div class="di-val">${f.v}</div>
-          </div>`).join('')}
+        ${reviewsHtml}
       </div>
     </div>`;
   }).join('');
