@@ -479,7 +479,9 @@
   .layout { max-width: 1060px; margin: 1rem auto 3rem; padding: 0 1.5rem; display: flex; gap: 16px; align-items: flex-start; }
   .sidebar { width: 175px; flex-shrink: 0; position: sticky; top: 110px; }
   .main-content { flex: 1; min-width: 0; }
-  .main-content .stats-bar { margin: 0 0 0.75rem; padding: 0; }
+  .stats-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .stats-row .stats-bar { margin: 0; padding: 0; flex: 1; }
+  .main-content .stats-bar { margin: 0; padding: 0; }
   .main-content .list { margin: 0; padding: 0; }
 
   /* ── Sidebar groups ── */
@@ -574,11 +576,6 @@
         <option value="">LGBTQ+: vše</option>
         <option value="ano">Pouze friendly</option>
       </select>
-      <select id="f-sort" onchange="render()">
-        <option value="pocet">Nejvíce hodnocení</option>
-        <option value="hvezdy">Nejlepší hodnocení</option>
-        <option value="az">A–Z</option>
-      </select>
       <a href="https://docs.google.com/forms/d/12ksXahejlHaKVpLlpbTjAoe_TlXfmYkehc8rq9K0gqc/viewform?edit_requested=true" target="_blank" rel="noopener" class="cta-btn">✏ Vyplň formulář</a>
     </div>
   </div>
@@ -639,7 +636,14 @@
       </div>
     </aside>
     <div class="main-content">
-      <div class="stats-bar" id="stats"></div>
+      <div class="stats-row">
+        <div class="stats-bar" id="stats"></div>
+        <select id="f-sort" onchange="render()">
+          <option value="pocet">Nejvíce hodnocení</option>
+          <option value="hvezdy">Nejlepší hodnocení</option>
+          <option value="az">A–Z</option>
+        </select>
+      </div>
       <div class="list" id="list"></div>
     </div>
   </div>
