@@ -457,7 +457,16 @@
   .car-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hover); transition: background .2s; }
   .car-dot.active { background: var(--accent); }
   .car-counter { font-size: 12px; color: var(--text-muted); min-width: 32px; text-align: center; }
-  .review-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  /* ── Chip filters ── */
+  .chip-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; }
+  .chip-inner { max-width: 860px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 0; }
+  .chip-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chip-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .chip { padding: 4px 12px; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+  .chip:hover { border-color: var(--border-hover); }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .review-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
   .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
 
@@ -512,6 +521,33 @@
     </div>
   </div>
 
+  <div class="chip-bar">
+    <div class="chip-inner">
+      <div class="chip-group">
+        <span class="chip-label">Věk lékaře</span>
+        <button class="chip" onclick="toggleChip('vek','Do 40 let')">Do 40 let</button>
+        <button class="chip" onclick="toggleChip('vek','40-50 let')">40–50 let</button>
+        <button class="chip" onclick="toggleChip('vek','50-60 let')">50–60 let</button>
+        <button class="chip" onclick="toggleChip('vek','Nad 60 let')">Nad 60 let</button>
+      </div>
+      <div class="chip-group">
+        <span class="chip-label">Vybavení</span>
+        <button class="chip" onclick="toggleChip('vybaveni','Moderní')">Moderní</button>
+        <button class="chip" onclick="toggleChip('vybaveni','Neutrální')">Neutrální</button>
+        <button class="chip" onclick="toggleChip('vybaveni','Zastaralé')">Zastaralé</button>
+      </div>
+      <div class="chip-group">
+        <span class="chip-label">Vzdělávání v novinkách</span>
+        <button class="chip" onclick="toggleChip('vzdel','Ano')">Ano</button>
+        <button class="chip" onclick="toggleChip('vzdel','Ne')">Ne</button>
+      </div>
+      <div class="chip-group">
+        <span class="chip-label">Bez poplatků</span>
+        <button class="chip" onclick="toggleChip('poplatky','Ne')">Bez poplatků</button>
+      </div>
+    </div>
+  </div>
+
   <div class="stats-bar" id="stats"></div>
   <div class="list" id="list"></div>
 </div>
@@ -543,6 +579,17 @@ const C = {
 // ── State ────────────────────────────────────────────────
 let data = [];
 let refreshTimer = null;
+const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set() };
+
+function toggleChip(cat, val) {
+  chipFilters[cat].has(val) ? chipFilters[cat].delete(val) : chipFilters[cat].add(val);
+  document.querySelectorAll(`.chip`).forEach(el => {
+    const elCat = el.getAttribute('onclick').match(/toggleChip\('(\w+)'/)[1];
+    const elVal = el.getAttribute('onclick').match(/'([^']+)'\)$/)[1];
+    el.classList.toggle('active', chipFilters[elCat]?.has(elVal));
+  });
+  render();
+}
 
 // ── Fetch data.json ───────────────────────────────────────
 async function fetchData() {
@@ -636,9 +683,24 @@ function render() {
     return true;
   });
 
+  // Chip filtry — AND mezi kategoriemi, OR uvnitř kategorie
+  const chipFiltered = filtered.filter(r => {
+    for (const [cat, vals] of Object.entries(chipFilters)) {
+      if (!vals.size) continue;
+      const col = { vek: C.vek, vybaveni: C.vybaveni, vzdel: C.vzdel, poplatky: C.poplatky }[cat];
+      const v = (r[col]||'').trim();
+      if (cat === 'poplatky') {
+        if (![...vals].some(sel => /^ne/i.test(v) === /^ne/i.test(sel))) return false;
+      } else {
+        if (![...vals].some(sel => v.toLowerCase().includes(sel.toLowerCase()))) return false;
+      }
+    }
+    return true;
+  });
+
   // Seskup podle jména doktora
   const groupMap = new Map();
-  filtered.forEach(r => {
+  chipFiltered.forEach(r => {
     const key = ((r[C.krestni]||'').trim() + ' ' + (r[C.prijmeni]||'').trim()).toLowerCase().replace(/\s+/g, ' ');
     if (!groupMap.has(key)) groupMap.set(key, []);
     groupMap.get(key).push(r);
