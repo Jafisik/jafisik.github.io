@@ -108,6 +108,16 @@ function updateFilterState() {
   });
 }
 
+// ── Parsování data z Google Forms (D.M.YYYY HH:MM:SS) ──────
+function parseDatum(str) {
+  if (!str) return 0;
+  const [datePart, timePart] = str.split(' ');
+  const [d, m, y] = (datePart || '').split('.').map(Number);
+  if (!d || !m || !y) return 0;
+  const [hh, mm, ss] = (timePart || '0:0:0').split(':').map(Number);
+  return new Date(y, m - 1, d, hh || 0, mm || 0, ss || 0).getTime();
+}
+
 // ── Render ───────────────────────────────────────────────
 function render() {
   const q = document.getElementById('search').value.toLowerCase();
@@ -150,6 +160,9 @@ function render() {
     if (!groupMap.has(key)) groupMap.set(key, []);
     groupMap.get(key).push(r);
   });
+
+  // Recenze u každého lékaře od nejnovější po nejstarší
+  groupMap.forEach(arr => arr.sort((a, b) => parseDatum(b[C.datum]) - parseDatum(a[C.datum])));
 
   const sort = document.getElementById('f-sort').value;
   let groups = [...groupMap.values()].sort((a, b) => {
