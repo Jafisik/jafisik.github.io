@@ -402,20 +402,11 @@ function initSwipe() {
   });
 }
 
-// ── Welcome modal ──────────────────────────────────────────
-function closeWelcome() {
-  document.getElementById('welcome-modal').classList.remove('open');
-  localStorage.setItem('gyno_welcome_seen', '1');
-}
-
 // ── Init ─────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('about-modal').classList.remove('open');
-    if (document.getElementById('welcome-modal').classList.contains('open')) closeWelcome();
+    document.getElementById('about-project-modal').classList.remove('open');
   }
 });
-if (!localStorage.getItem('gyno_welcome_seen')) {
-  document.getElementById('welcome-modal').classList.add('open');
-}
 launchApp();
