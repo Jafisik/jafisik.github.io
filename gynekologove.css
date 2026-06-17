@@ -355,9 +355,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .stars {
