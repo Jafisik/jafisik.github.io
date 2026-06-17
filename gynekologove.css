@@ -48,7 +48,7 @@ header {
 }
 
 .header-inner {
-  max-width: 860px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -558,10 +558,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
   body { overflow-x: hidden; font-size: 16px; }
   header { padding: 8px 1rem; }
   .header-inner { gap: 6px; height: auto; flex-wrap: wrap; justify-content: space-between; }
-  .logo { flex-basis: 100%; order: 0; text-align: center; }
-  #btn-o-mne { order: 1; }
-  .ig-link { order: 2; }
-  .search-wrap { flex-basis: 100%; order: 4; }
+  .search-wrap { flex-basis: 100%; order: 1; }
   .ig-link span { display: none; }
   .live-badge { display: none; }
   .filter-bar { padding: 0 1rem; }
