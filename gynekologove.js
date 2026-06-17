@@ -297,7 +297,7 @@ function buildCardHtml(reviews, i) {
       </div>`;
     }).join('');
 
-    const reviewsHtml = `<div class="car-track-wrap" data-id="${i}" data-total="${reviews.length}"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
+    const reviewsHtml = `<div class="car-track-wrap" id="wrap-${i}" data-id="${i}" data-total="${reviews.length}"><div class="car-track" id="track-${i}">${slidesHtml}</div></div>`;
 
     return `
     <div class="card${lgbtYes ? ' lgbt-card' : ''}" id="card-${i}">
@@ -361,13 +361,23 @@ function toggle(i) {
   });
   det.classList.toggle('open', willOpen);
   document.getElementById('chev-' + i).classList.toggle('open', willOpen);
+  if (willOpen) syncCarHeight(i);
 }
 
 // ── Carousel ─────────────────────────────────────────────
 const carPos = {};
+function syncCarHeight(id) {
+  const wrap = document.getElementById('wrap-' + id);
+  const track = document.getElementById('track-' + id);
+  if (!wrap || !track) return;
+  const activeSlide = track.children[carPos[id] || 0];
+  if (activeSlide) wrap.style.height = activeSlide.offsetHeight + 'px';
+}
+
 function carMove(id, dir, total) {
   carPos[id] = Math.max(0, Math.min(total - 1, (carPos[id] || 0) + dir));
   document.getElementById('track-' + id).style.transform = `translateX(-${carPos[id] * 100}%)`;
+  syncCarHeight(id);
 }
 
 function initSwipe() {

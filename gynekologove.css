@@ -480,8 +480,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
 .empty svg { display: block; margin: 0 auto 12px; color: var(--text-light); }
 
 /* ── Carousel ── */
-.car-track-wrap { overflow: hidden; }
-.car-track { display: flex; transition: transform .3s ease; }
+.car-track-wrap { overflow: hidden; transition: height .25s ease; }
+.car-track { display: flex; align-items: flex-start; transition: transform .3s ease; }
 .car-slide { min-width: 100%; padding: 4px 0; }
 .car-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; }
 .car-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
