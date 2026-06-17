@@ -519,6 +519,20 @@
   .ig-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); text-decoration: none; flex-shrink: 0; }
   .ig-link:hover { color: var(--text); }
 
+  .about-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 5px 13px; font-size: 13px; font-family: inherit; color: var(--text-muted); cursor: pointer; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
+  .about-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center; padding: 1.5rem; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--surface); border-radius: var(--radius); padding: 2rem; max-width: 480px; width: 100%; position: relative; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .modal-box h2 { font-size: 17px; font-weight: 600; }
+  .modal-box p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .modal-box p strong { color: var(--text); }
+  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 22px; color: var(--text-light); cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; }
+  .modal-close:hover { color: var(--text); background: var(--surface2); }
+  .modal-ig { display: inline-block; font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 500; }
+  .modal-ig:hover { text-decoration: underline; }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     body { overflow-x: hidden; font-size: 16px; }
@@ -570,8 +584,20 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render()">
       </div>
+      <button class="about-btn" onclick="document.getElementById('about-modal').classList.add('open')">O nás</button>
     </div>
   </header>
+
+  <div id="about-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="document.getElementById('about-modal').classList.remove('open')">&times;</button>
+      <h2>O nás</h2>
+      <p>Jsme komunita lidí, kteří věří, že každá z nás má právo na informované rozhodování o svém těle a zdraví.</p>
+      <p>Tato stránka vznikla jako součást projektu <strong>bezhormonu</strong> — místa, kde sdílíme zkušenosti s gynekology, kteří respektují přirozený cyklus a podporují ženy při vysazení hormonální antikoncepce.</p>
+      <p>Všechna hodnocení jsou anonymní a pocházejí od skutečných pacientek. Chceš přispět? Vyplň formulář a pomoz ostatním najít správného lékaře.</p>
+      <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="modal-ig">Sleduj nás na Instagramu @bezhormonu</a>
+    </div>
+  </div>
 
   <div class="filter-bar">
     <div class="filter-inner">
@@ -995,6 +1021,9 @@ function initSwipe() {
 }
 
 // ── Init ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('about-modal').classList.remove('open');
+});
 launchApp();
 </script>
 </body>
