@@ -256,14 +256,20 @@ function buildCardHtml(reviews, i) {
         { l: 'Osobnost lékaře/ky', v: r[C.doktor] },
         { l: 'Sestra', v: r[C.sestra] },
         { l: 'Komplikace řešené v ordinaci', v: r[C.komplikace] },
-        { l: 'Hormonální antikoncepce', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
-        { l: 'Vysazení HA bere jako plánování rodiny', v: r[C.hac_deti] },
+      ].map(f => ({ l: f.l, v: f.v || '–' }));
+
+      const opinionFields = [
+        { l: 'Hormonální antikoncepci', v: [r[C.hac], r[C.hac2]].filter(Boolean).join(' ') },
+        { l: 'Vysazení HA a plánování rodiny', v: r[C.hac_deti] },
         { l: 'Bylinky a doplňky stravy', v: [r[C.bylinky], r[C.bylinky2]].filter(Boolean).join(' ') },
-        { l: 'Endometrióza', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
+        { l: 'Endometriózu', v: [r[C.endo], r[C.endo2]].filter(Boolean).join(' ') },
         { l: 'PCOS', v: [r[C.pcos], r[C.pcos2]].filter(Boolean).join(' ') },
         { l: 'Vaginální infekce', v: [r[C.vag], r[C.vag2]].filter(Boolean).join(' ') },
         { l: 'Problémy se sexem', v: [r[C.sex], r[C.sex2]].filter(Boolean).join(' ') },
         { l: 'Celostní přístup ke zdraví', v: [r[C.celostni], r[C.celostni2]].filter(Boolean).join(' ') },
+      ].map(f => ({ l: f.l, v: f.v || '–' }));
+
+      const restSections = [
         { l: 'Otázky na děti / plánování', v: [r[C.deti], r[C.deti2]].filter(Boolean).join(' ') },
         { l: 'Rozbory a stěry', v: [r[C.rozbory], r[C.rozbory2]].filter(Boolean).join(' ') },
         { l: 'Komunikace při vyšetření', v: r[C.komunikace] },
@@ -285,6 +291,9 @@ function buildCardHtml(reviews, i) {
         ${reviews.length > 1 ? `<div class="car-dots-row">${reviews.map((_,di) => `<span class="car-dot${di===ri?' active':''}"></span>`).join('')}</div>` : ''}
         ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
         ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
+        <div class="section-group-title">Jaký má názor na</div>
+        ${opinionFields.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
+        ${restSections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
       </div>`;
     }).join('');
 
