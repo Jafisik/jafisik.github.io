@@ -60,7 +60,6 @@ function launchApp() {
       data = JSON.parse(cached);
       populateKraje();
       render();
-      setStatus('ok');
     } catch(e) { localStorage.removeItem('gyno_data'); }
   } else {
     document.getElementById('list').innerHTML = '<div class="empty"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Načítám data…</div>';
@@ -76,22 +75,15 @@ async function tick(retried) {
     if (fresh.length) {
       data = fresh;
       localStorage.setItem('gyno_data', JSON.stringify(data));
-      setStatus('ok');
       populateKraje();
       render();
     } else {
       if (!data.length) document.getElementById('list').innerHTML = '<div class="empty">data.json je prázdné.</div>';
-      setStatus('err');
     }
   } catch(e) {
     if (!data.length && !retried) { setTimeout(() => tick(true), 1500); return; }
     if (!data.length) document.getElementById('list').innerHTML = '<div class="empty">Nepodařilo se načíst data: ' + e.message + '</div>';
-    setStatus('err');
   }
-}
-
-function setStatus(state) {
-  document.getElementById('dot').className = 'dot' + (state === 'err' ? ' err' : '');
 }
 
 // ── Kraje select ─────────────────────────────────────────
