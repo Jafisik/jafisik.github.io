@@ -251,7 +251,7 @@ function buildCardHtml(reviews, i) {
         { l: 'Vybavení ordinace', v: r[C.vybaveni] },
         { l: 'Vzdělávání v novinkách', v: r[C.vzdel] },
         { l: '3D ultrazvuk', v: r[C.ultrazvuk] },
-      ].filter(f => f.v);
+      ].map(f => ({ l: f.l, v: f.v || '–' }));
       const sections = [
         { l: 'Osobnost lékaře/ky', v: r[C.doktor] },
         { l: 'Sestra', v: r[C.sestra] },
@@ -269,7 +269,7 @@ function buildCardHtml(reviews, i) {
         { l: 'Komunikace při vyšetření', v: r[C.komunikace] },
         { l: 'Pomoc při snaze otěhotnět', v: r[C.ivf] },
         { l: 'Závěr a poznámky', v: r[C.zaver] },
-      ].filter(f => f.v);
+      ].map(f => ({ l: f.l, v: f.v || '–' }));
 
       const rawDate = r[C.datum] || '';
       const datePart = rawDate.split(' ')[0];
