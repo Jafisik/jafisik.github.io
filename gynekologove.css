@@ -340,8 +340,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   letter-spacing: 0.5px;
 }
 
-.avatar.f { background: var(--accent-light); color: var(--accent); }
-.avatar.m { background: var(--teal-bg); color: var(--teal); }
+.avatar.f { background: #f3ead9; color: #8a6d3a; }
+.avatar.m { background: #e6e9ec; color: #51606b; }
 
 .card-info { flex: 1; min-width: 0; }
 
