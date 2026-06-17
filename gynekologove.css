@@ -504,7 +504,6 @@ select.active { border-color: var(--accent); color: var(--accent); }
 .review-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
 .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
 .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
-.review-date { font-size: 11px; color: var(--text-light); margin-left: auto; }
 
 .ig-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); text-decoration: none; flex-shrink: 0; }
 .ig-link:hover { color: var(--text); }

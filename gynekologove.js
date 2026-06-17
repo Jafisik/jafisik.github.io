@@ -254,10 +254,9 @@ function render() {
       return `<div class="car-slide">
         <div class="review-header">
           ${reviews.length > 1 ? `<button class="car-btn" ${ri === 0 ? 'disabled' : ''} onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>` : ''}
-          <span class="review-label">Hodnocení ${ri + 1} / ${reviews.length}</span>
+          <span class="review-label">${datePart || `Hodnocení ${ri + 1} / ${reviews.length}`}</span>
           <span class="stars" style="font-size:13px">${rStars}</span>
           <span class="review-num">${hvezdy} z 5</span>
-          ${datePart ? `<span class="review-date">${datePart}</span>` : ''}
           ${reviews.length > 1 ? `<button class="car-btn" ${ri === reviews.length - 1 ? 'disabled' : ''} onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
         </div>
         ${reviews.length > 1 ? `<div class="car-dots-row">${reviews.map((_,di) => `<span class="car-dot${di===ri?' active':''}"></span>`).join('')}</div>` : ''}
