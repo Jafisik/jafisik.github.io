@@ -203,7 +203,7 @@ function render() {
 
   document.getElementById('list').innerHTML = groups.map((reviews, i) => {
     const r0 = reviews[0];
-    const name = [r0[C.krestni], r0[C.prijmeni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
+    const name = [r0[C.prijmeni], r0[C.krestni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
     const initials = ((r0[C.krestni]||'').trim().charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
     const pohlaviLow = (r0[C.pohlavi]||'').toLowerCase();
     const sub = [r0[C.ordinace], r0[C.mesto], r0[C.kraj]].filter(Boolean).join(' · ');
