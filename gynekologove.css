@@ -136,7 +136,7 @@ header {
 }
 
 .filter-inner {
-  max-width: 860px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -548,7 +548,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
 .modal-ig:hover { text-decoration: underline; }
 
 .project-intro { background: var(--accent-light); border-bottom: 1px solid var(--border); padding: 10px 1.5rem; }
-.project-intro-inner { max-width: 860px; margin: 0 auto; font-size: 13px; color: var(--text); line-height: 1.5; }
+.project-intro-inner { max-width: 1000px; margin: 0 auto; font-size: 13px; color: var(--text); line-height: 1.5; }
 .project-intro-inner p { margin-bottom: 8px; }
 .project-intro-inner p:last-child { margin-bottom: 0; }
 .project-intro-extra { display: none; }
