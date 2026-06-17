@@ -174,6 +174,9 @@ function render() {
       const name = g => ((g[0][C.prijmeni]||'') + (g[0][C.krestni]||'')).toLowerCase().trim();
       return sort === 'za' ? name(b).localeCompare(name(a), 'cs') : name(a).localeCompare(name(b), 'cs');
     }
+    if (sort === 'nove') {
+      return parseDatum(b[0][C.datum]) - parseDatum(a[0][C.datum]);
+    }
     return b.length - a.length;
   });
 
