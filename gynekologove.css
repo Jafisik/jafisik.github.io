@@ -340,7 +340,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
   letter-spacing: 0.5px;
 }
 
-.avatar.f { background: #fae3cc; color: #b5651d; }
+.avatar.f { background: #fbe7ee; color: #c06888; }
 .avatar.m { background: #e1ebdd; color: #4a7a4f; }
 
 .card-info { flex: 1; min-width: 0; }
