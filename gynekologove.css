@@ -295,6 +295,9 @@ select.active { border-color: var(--accent); color: var(--accent); }
   border-radius: var(--radius);
   padding: 16px 18px;
   transition: border-color 0.15s, box-shadow 0.15s;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .card:hover {
@@ -424,6 +427,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   margin-bottom: 12px;
 }
 
+.detail-grid > div { min-width: 0; }
+
 .di-label {
   font-size: 11px;
   color: var(--text-light);
@@ -436,6 +441,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   font-size: 13px;
   color: var(--text);
   line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .detail-section {
@@ -450,6 +457,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   font-size: 13px;
   color: var(--text-muted);
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Empty / loading ── */
@@ -536,8 +545,9 @@ select.active { border-color: var(--accent); color: var(--accent); }
   .filter-inner #f-kraj { margin-left: 0; }
   select { font-size: 12px; padding: 5px 8px; padding-right: 20px; }
   .cta-btn { font-size: 12px; padding: 5px 10px; }
-  .layout { flex-direction: column; padding: 0 1rem; gap: 10px; }
+  .layout { flex-direction: column; padding: 0 1rem; gap: 10px; align-items: stretch; }
   .sidebar { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 6px; }
+  .main-content { width: 100%; }
   .sb-group { flex: 1; min-width: 130px; margin-bottom: 0; }
   .sb-options { flex-direction: row; flex-wrap: wrap; }
   .main-content .list { padding: 0; }
