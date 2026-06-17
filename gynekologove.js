@@ -70,7 +70,7 @@ function launchApp() {
   refreshTimer = setInterval(tick, REFRESH_INTERVAL_MS);
 }
 
-async function tick() {
+async function tick(retried) {
   try {
     const fresh = await fetchData();
     if (fresh.length) {
@@ -84,6 +84,7 @@ async function tick() {
       setStatus('err');
     }
   } catch(e) {
+    if (!data.length && !retried) { setTimeout(() => tick(true), 1500); return; }
     if (!data.length) document.getElementById('list').innerHTML = '<div class="empty">Nepodařilo se načíst data: ' + e.message + '</div>';
     setStatus('err');
   }
