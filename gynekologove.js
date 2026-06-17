@@ -229,6 +229,11 @@ function buildCardHtml(reviews, i) {
     const name = [r0[C.prijmeni], r0[C.krestni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
     const initials = ((r0[C.krestni]||'').trim().charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
     const pohlaviLow = (r0[C.pohlavi]||'').toLowerCase();
+    const genderIcon = pohlaviLow === 'žena'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M12 13.2c-.5 0-.9.3-1.1.7l-4.4 7.6c-.3.6.1 1.3.8 1.3h9.4c.7 0 1.1-.7.8-1.3l-4.4-7.6c-.2-.4-.6-.7-1.1-.7z"/></svg>'
+      : pohlaviLow === 'muž'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M6 22v-3a6 6 0 0 1 12 0v3z"/></svg>'
+      : '';
     const sub = [r0[C.ordinace], r0[C.mesto], r0[C.kraj]].filter(Boolean).join(' · ');
     const avgStars = reviews.reduce((a, r) => a + (parseInt(r[C.hvezdy]) || 0), 0) / reviews.length;
     const avgRounded = Math.min(Math.round(avgStars), 5);
@@ -302,7 +307,7 @@ function buildCardHtml(reviews, i) {
     return `
     <div class="card${lgbtYes ? ' lgbt-card' : ''}" id="card-${i}">
       <div class="card-top" onclick="toggle(${i})" style="cursor:pointer">
-        <div class="avatar ${pohlaviLow === 'žena' ? 'f' : pohlaviLow === 'muž' ? 'm' : ''}">${initials || '?'}</div>
+        <div class="avatar ${pohlaviLow === 'žena' ? 'f' : pohlaviLow === 'muž' ? 'm' : ''}">${genderIcon || initials || '?'}</div>
         <div class="card-info">
           <div class="card-name">${name}</div>
           ${sub ? `<div class="card-sub">${sub}</div>` : ''}
