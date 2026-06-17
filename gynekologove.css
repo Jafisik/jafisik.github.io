@@ -498,6 +498,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
 
 /* ── Sidebar groups ── */
 .sb-group { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 6px; background: var(--surface); }
+.reset-filters-btn { width: 100%; padding: 8px 12px; margin-bottom: 8px; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-family: inherit; color: var(--text-muted); cursor: pointer; transition: border-color .15s, color .15s; }
+.reset-filters-btn:hover { border-color: var(--border-hover); color: var(--text); }
 .sb-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: none; border: none; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); text-align: left; }
 .sb-toggle:hover { background: var(--surface2); }
 .sb-toggle svg { transition: transform .2s; flex-shrink: 0; }
@@ -550,10 +552,11 @@ select.active { border-color: var(--accent); color: var(--accent); }
   .filters-toggle-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); cursor: pointer; }
   .filters-toggle-btn svg { transition: transform .2s; }
   .filters-toggle-btn.open svg { transform: rotate(180deg); }
-  .sidebar { width: 100%; position: static; display: none; flex-wrap: wrap; gap: 6px; }
+  .sidebar { width: 100%; position: static; display: none; flex-wrap: wrap; gap: 6px; align-items: flex-start; }
   .sidebar.open { display: flex; }
   .main-content { width: 100%; }
   .sb-group { flex: 1; min-width: 130px; margin-bottom: 0; }
+  .reset-filters-btn { flex-basis: 100%; margin-bottom: 0; }
   .sb-options { flex-direction: row; flex-wrap: wrap; }
   .main-content .list { padding: 0; }
   .main-content .stats-bar { padding: 0; gap: 6px; }

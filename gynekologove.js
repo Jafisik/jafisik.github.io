@@ -49,6 +49,17 @@ function toggleChip(cat, val) {
   render();
 }
 
+function resetFilters() {
+  Object.values(chipFilters).forEach(set => set.clear());
+  document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
+  document.getElementById('search').value = '';
+  ['f-kraj', 'f-pohlavi', 'f-hvezdy', 'f-lgbt'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  updateFilterState();
+  render();
+}
+
 // ── Fetch data.json ───────────────────────────────────────
 async function fetchData() {
   const res = await fetch('/data.json');
