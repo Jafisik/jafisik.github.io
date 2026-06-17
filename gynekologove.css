@@ -469,6 +469,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   word-break: break-word;
 }
 
+.detail-section .di-val.dark { color: var(--text); }
+
 /* ── Empty / loading ── */
 .empty {
   text-align: center;

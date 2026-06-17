@@ -290,7 +290,7 @@ function buildCardHtml(reviews, i) {
         </div>
         ${reviews.length > 1 ? `<div class="car-dots-row">${reviews.map((_,di) => `<span class="car-dot${di===ri?' active':''}"></span>`).join('')}</div>` : ''}
         ${grid.length ? `<div class="detail-grid">${grid.map(f => `<div><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}</div>` : ''}
-        ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
+        ${sections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val dark">${f.v}</div></div>`).join('')}
         <div class="section-group-title">Jaký má názor na</div>
         ${opinionFields.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
         ${restSections.map(f => `<div class="detail-section"><div class="di-label">${f.l}</div><div class="di-val">${f.v}</div></div>`).join('')}
