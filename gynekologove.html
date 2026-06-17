@@ -514,6 +514,7 @@
   .review-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
   .review-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .review-num { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+  .review-date { font-size: 11px; color: var(--text-light); margin-left: auto; }
 
   .ig-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); text-decoration: none; flex-shrink: 0; }
   .ig-link:hover { color: var(--text); }
@@ -669,7 +670,7 @@ const REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minut
 
 // ── Sloupce (indexy odpovídají pořadí otázek v dotazníku) ──
 const C = {
-  // index 0 = časové razítko z Google Forms
+  datum: 0,
   krestni: 1, prijmeni: 2, ordinace: 3, web: 4, pohlavi: 5,
   kraj: 6, mesto: 7, vek: 8, poplatky: 9, ceny: 10,
   prohlidky: 11, komplikace: 12,
@@ -914,12 +915,16 @@ function render() {
         { l: 'Závěr a poznámky', v: r[C.zaver] },
       ].filter(f => f.v);
 
+      const rawDate = r[C.datum] || '';
+      const datePart = rawDate.split(' ')[0];
+
       return `<div class="car-slide">
         <div class="review-header">
           ${reviews.length > 1 ? `<button class="car-btn" ${ri === 0 ? 'disabled' : ''} onclick="carMove(${i},-1,${reviews.length});event.stopPropagation()">&#8249;</button>` : ''}
           <span class="review-label">Hodnocení ${ri + 1} / ${reviews.length}</span>
           <span class="stars" style="font-size:13px">${rStars}</span>
           <span class="review-num">${hvezdy} z 5</span>
+          ${datePart ? `<span class="review-date">${datePart}</span>` : ''}
           ${reviews.length > 1 ? `<button class="car-btn" ${ri === reviews.length - 1 ? 'disabled' : ''} onclick="carMove(${i},1,${reviews.length});event.stopPropagation()">&#8250;</button>` : ''}
         </div>
         ${reviews.length > 1 ? `<div class="car-dots-row">${reviews.map((_,di) => `<span class="car-dot${di===ri?' active':''}"></span>`).join('')}</div>` : ''}
