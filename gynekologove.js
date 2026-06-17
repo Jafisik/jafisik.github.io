@@ -405,11 +405,17 @@ function initSwipe() {
   });
 }
 
+function toggleProjectIntro() {
+  const extra = document.getElementById('project-intro-extra');
+  const btn = document.getElementById('project-intro-toggle');
+  const open = extra.classList.toggle('open');
+  btn.textContent = open ? 'Číst méně' : 'Číst více';
+}
+
 // ── Init ─────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('about-modal').classList.remove('open');
-    document.getElementById('about-project-modal').classList.remove('open');
   }
 });
 launchApp();

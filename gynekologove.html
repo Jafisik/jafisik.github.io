@@ -23,10 +23,18 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render()">
       </div>
-      <button class="about-btn" id="btn-o-projektu" onclick="document.getElementById('about-project-modal').classList.add('open')">O projektu</button>
       <button class="about-btn" id="btn-o-mne" onclick="document.getElementById('about-modal').classList.add('open')">O mně</button>
     </div>
   </header>
+
+  <div class="project-intro">
+    <div class="project-intro-inner">
+      <strong>Zkušenosti s gynekology v Česku a na Slovensku.</strong>
+      Na této stránce najdete zkušenosti žen s gynekology napříč Českou a Slovenskou republikou.
+      <span class="project-intro-extra" id="project-intro-extra"> Cílem projektu je vytvořit prostor, kde mohou pacientky sdílet své zážitky z návštěv ordinací a pomoci tak ostatním ženám při výběru lékaře. Každá zkušenost je individuální a vychází z osobního pohledu konkrétní pacientky. Hodnocení proto nemusí vždy odpovídat skutečnému přístupu lékaře ke všem pacientkám. Berte je prosím jako subjektivní sdílení zkušeností, nikoliv jako objektivní posouzení odbornosti či kvality péče. Pokud máte vlastní zkušenost, budu ráda, když se o ni podělíte. Pomůžete tím dalším ženám získat lepší představu o tom, co mohou od konkrétní ordinace očekávat. <strong>Ing. Magdalena Urbánková, Bez Hormonu</strong></span>
+      <button class="project-intro-toggle" id="project-intro-toggle" onclick="toggleProjectIntro()">Číst více</button>
+    </div>
+  </div>
 
   <div id="about-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
     <div class="modal-box">
@@ -37,17 +45,6 @@
       <p>Kromě tvorby obsahu na sociálních sítích pořádám besedy, přednášky a spolupracuji s odborníky z oblasti gynekologie, reprodukční medicíny a dalších oborů souvisejících se ženským zdravím.</p>
       <img src="Bezhormonu_promo_3-3-2026_A4_SH-11.jpg" alt="Bez Hormonu" class="modal-img" loading="lazy">
       <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="modal-ig">Sleduj mě na Instagramu @bezhormonu</a>
-    </div>
-  </div>
-
-  <div id="about-project-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
-    <div class="modal-box">
-      <button class="modal-close" onclick="document.getElementById('about-project-modal').classList.remove('open')">&times;</button>
-      <h2>Zkušenosti s gynekology v Česku a na Slovensku</h2>
-      <p>Na této stránce najdete zkušenosti žen s gynekology napříč Českou a Slovenskou republikou. Cílem projektu je vytvořit prostor, kde mohou pacientky sdílet své zážitky z návštěv ordinací a pomoci tak ostatním ženám při výběru lékaře.</p>
-      <p>Každá zkušenost je individuální a vychází z osobního pohledu konkrétní pacientky. Hodnocení proto nemusí vždy odpovídat skutečnému přístupu lékaře ke všem pacientkám. Berte je prosím jako subjektivní sdílení zkušeností, nikoliv jako objektivní posouzení odbornosti či kvality péče.</p>
-      <p>Pokud máte vlastní zkušenost, budu ráda, když se o ni podělíte. Pomůžete tím dalším ženám získat lepší představu o tom, co mohou od konkrétní ordinace očekávat.</p>
-      <p><strong>Ing. Magdalena Urbánková</strong><br>Bez Hormonu</p>
     </div>
   </div>
 

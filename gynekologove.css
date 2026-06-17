@@ -547,6 +547,12 @@ select.active { border-color: var(--accent); color: var(--accent); }
 .modal-ig { display: inline-block; font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 500; }
 .modal-ig:hover { text-decoration: underline; }
 
+.project-intro { background: var(--accent-light); border-bottom: 1px solid var(--border); padding: 10px 1.5rem; }
+.project-intro-inner { max-width: 860px; margin: 0 auto; font-size: 13px; color: var(--text); line-height: 1.5; }
+.project-intro-extra { display: none; }
+.project-intro-extra.open { display: inline; }
+.project-intro-toggle { background: none; border: none; color: var(--accent); font-weight: 600; font-size: 13px; font-family: inherit; cursor: pointer; padding: 0; margin-left: 4px; text-decoration: underline; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   body { overflow-x: hidden; font-size: 16px; }
@@ -555,7 +561,6 @@ select.active { border-color: var(--accent); color: var(--accent); }
   .logo { flex-basis: 100%; order: 0; text-align: center; }
   #btn-o-mne { order: 1; }
   .ig-link { order: 2; }
-  #btn-o-projektu { order: 3; }
   .search-wrap { flex-basis: 100%; order: 4; }
   .ig-link span { display: none; }
   .live-badge { display: none; }
