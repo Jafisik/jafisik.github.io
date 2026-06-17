@@ -366,7 +366,10 @@ function toggle(i) {
   });
   det.classList.toggle('open', willOpen);
   document.getElementById('chev-' + i).classList.toggle('open', willOpen);
-  if (willOpen) syncCarHeight(i);
+  if (willOpen) {
+    syncCarHeight(i);
+    document.getElementById('card-' + i).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // ── Carousel ─────────────────────────────────────────────

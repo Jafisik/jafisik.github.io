@@ -298,6 +298,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
   max-width: 100%;
   overflow-wrap: break-word;
   word-break: break-word;
+  scroll-margin-top: 70px;
 }
 
 .card:hover {
@@ -575,7 +576,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
   .stats-row { flex-wrap: wrap; }
   .stat { padding: 5px 10px; font-size: 12px; }
   .stat strong { font-size: 16px; }
-  .card { padding: 12px 14px; }
+  .card { padding: 12px 14px; scroll-margin-top: 100px; }
   .detail-grid { grid-template-columns: 1fr; }
   .card-name { font-size: 14px; }
   .avatar { width: 36px; height: 36px; font-size: 12px; }
