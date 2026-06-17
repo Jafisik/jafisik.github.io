@@ -314,8 +314,17 @@ function renderGroupsChunked(groups) {
 }
 
 function toggle(i) {
-  document.getElementById('det-' + i).classList.toggle('open');
-  document.getElementById('chev-' + i).classList.toggle('open');
+  const det = document.getElementById('det-' + i);
+  const willOpen = !det.classList.contains('open');
+  document.querySelectorAll('.detail.open').forEach(el => {
+    if (el !== det) {
+      el.classList.remove('open');
+      const otherChev = document.getElementById('chev-' + el.id.slice(4));
+      if (otherChev) otherChev.classList.remove('open');
+    }
+  });
+  det.classList.toggle('open', willOpen);
+  document.getElementById('chev-' + i).classList.toggle('open', willOpen);
 }
 
 // ── Carousel ─────────────────────────────────────────────

@@ -534,8 +534,9 @@ select.active { border-color: var(--accent); color: var(--accent); }
 /* ── Responsive ── */
 @media (max-width: 768px) {
   body { overflow-x: hidden; font-size: 16px; }
-  header { padding: 0 1rem; }
-  .header-inner { gap: 6px; height: 50px; }
+  header { padding: 8px 1rem; }
+  .header-inner { gap: 6px; height: auto; flex-wrap: wrap; }
+  .search-wrap { order: -1; flex-basis: 100%; }
   .logo { display: none; }
   .ig-link span { display: none; }
   .live-badge { display: none; }
