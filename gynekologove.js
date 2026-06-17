@@ -201,7 +201,10 @@ function render() {
     return;
   }
 
-  document.getElementById('list').innerHTML = groups.map((reviews, i) => {
+  renderGroupsChunked(groups);
+}
+
+function buildCardHtml(reviews, i) {
     const r0 = reviews[0];
     const name = [r0[C.prijmeni], r0[C.krestni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
     const initials = ((r0[C.krestni]||'').trim().charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
@@ -293,8 +296,28 @@ function render() {
         ${reviewsHtml}
       </div>
     </div>`;
-  }).join('');
-  initSwipe();
+}
+
+let renderToken = 0;
+const RENDER_CHUNK_SIZE = 12;
+
+function renderGroupsChunked(groups) {
+  const myToken = ++renderToken;
+  const listEl = document.getElementById('list');
+  listEl.innerHTML = '';
+
+  let idx = 0;
+  function renderChunk() {
+    if (myToken !== renderToken) return;
+    const slice = groups.slice(idx, idx + RENDER_CHUNK_SIZE);
+    listEl.insertAdjacentHTML('beforeend', slice.map((reviews, j) => buildCardHtml(reviews, idx + j)).join(''));
+    initSwipe();
+    idx += RENDER_CHUNK_SIZE;
+    if (idx < groups.length) {
+      requestAnimationFrame(() => setTimeout(renderChunk, 0));
+    }
+  }
+  renderChunk();
 }
 
 function toggle(i) {
