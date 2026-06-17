@@ -34,6 +34,11 @@ function toggleGroup(id) {
   btn.classList.toggle('open');
 }
 
+function toggleFiltersPanel() {
+  document.getElementById('sidebar-filters').classList.toggle('open');
+  document.getElementById('filters-toggle-btn').classList.toggle('open');
+}
+
 function toggleChip(cat, val) {
   chipFilters[cat].has(val) ? chipFilters[cat].delete(val) : chipFilters[cat].add(val);
   document.querySelectorAll(`.chip`).forEach(el => {

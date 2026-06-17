@@ -489,6 +489,7 @@ select.active { border-color: var(--accent); color: var(--accent); }
 /* ── Layout ── */
 .layout { max-width: 1060px; margin: 1rem auto 3rem; padding: 0 1.5rem; display: flex; gap: 16px; align-items: flex-start; }
 .sidebar { width: 175px; flex-shrink: 0; position: sticky; top: 110px; }
+.filters-toggle-btn { display: none; }
 .main-content { flex: 1; min-width: 0; }
 .stats-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
 .stats-row .stats-bar { margin: 0; padding: 0; flex: 1; }
@@ -546,7 +547,11 @@ select.active { border-color: var(--accent); color: var(--accent); }
   select { font-size: 12px; padding: 5px 8px; padding-right: 20px; }
   .cta-btn { font-size: 12px; padding: 5px 10px; }
   .layout { flex-direction: column; padding: 0 1rem; gap: 10px; align-items: stretch; }
-  .sidebar { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 6px; }
+  .filters-toggle-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); cursor: pointer; }
+  .filters-toggle-btn svg { transition: transform .2s; }
+  .filters-toggle-btn.open svg { transform: rotate(180deg); }
+  .sidebar { width: 100%; position: static; display: none; flex-wrap: wrap; gap: 6px; }
+  .sidebar.open { display: flex; }
   .main-content { width: 100%; }
   .sb-group { flex: 1; min-width: 130px; margin-bottom: 0; }
   .sb-options { flex-direction: row; flex-wrap: wrap; }
