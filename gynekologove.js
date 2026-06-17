@@ -157,9 +157,9 @@ function render() {
       const avg = g => g.reduce((s, r) => s + (parseInt(r[C.hvezdy]) || 0), 0) / g.length;
       return avg(b) - avg(a);
     }
-    if (sort === 'az') {
+    if (sort === 'az' || sort === 'za') {
       const name = g => ((g[0][C.prijmeni]||'') + (g[0][C.krestni]||'')).toLowerCase().trim();
-      return name(a).localeCompare(name(b), 'cs');
+      return sort === 'za' ? name(b).localeCompare(name(a), 'cs') : name(a).localeCompare(name(b), 'cs');
     }
     return b.length - a.length;
   });
