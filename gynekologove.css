@@ -548,12 +548,10 @@ select.active { border-color: var(--accent); color: var(--accent); }
 .modal-ig:hover { text-decoration: underline; }
 
 .project-intro { background: var(--accent-light); border-bottom: 1px solid var(--border); padding: 10px 1.5rem; }
-.project-intro-inner { max-width: 1000px; margin: 0 auto; font-size: 13px; color: var(--text); line-height: 1.5; text-align: center; }
-.project-intro-inner p { margin-bottom: 8px; }
-.project-intro-inner p:last-child { margin-bottom: 0; }
+.project-intro-inner { max-width: 1000px; margin: 0 auto; font-size: 13px; color: var(--text); line-height: 1.5; }
 .project-intro-extra { display: none; }
-.project-intro-extra.open { display: block; }
-.project-intro-toggle { background: none; border: none; color: var(--accent); font-weight: 600; font-size: 13px; font-family: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+.project-intro-extra.open { display: inline; }
+.project-intro-toggle { background: none; border: none; color: var(--accent); font-weight: 600; font-size: 13px; font-family: inherit; cursor: pointer; padding: 0; margin-left: 4px; text-decoration: underline; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
