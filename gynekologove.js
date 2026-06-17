@@ -174,15 +174,10 @@ function render() {
 
   // Stats
   const totalReviews = groups.reduce((a, g) => a + g.length, 0);
-  const allStars = groups.flatMap(g => g.map(r => parseInt(r[C.hvezdy]) || 0));
-  const avg = allStars.length ? (allStars.reduce((a, b) => a + b, 0) / allStars.length).toFixed(1) : '–';
-  const lgbtN = groups.filter(g => g.some(r => (r[C.lgbt]||'').toLowerCase().includes('ano'))).length;
 
   document.getElementById('stats').innerHTML = `
     <div class="stat"><strong>${groups.length}</strong>lékařů</div>
     <div class="stat"><strong>${totalReviews}</strong>hodnocení</div>
-    <div class="stat"><strong>${avg}</strong>průměr hvězd</div>
-    <div class="stat"><strong>${lgbtN}</strong>LGBTQ+ friendly</div>
   `;
 
   if (!groups.length) {
