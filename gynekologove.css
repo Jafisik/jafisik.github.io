@@ -536,8 +536,8 @@ select.active { border-color: var(--accent); color: var(--accent); }
   body { overflow-x: hidden; font-size: 16px; }
   header { padding: 8px 1rem; }
   .header-inner { gap: 6px; height: auto; flex-wrap: wrap; }
-  .search-wrap { order: -1; flex-basis: 100%; }
-  .logo { display: none; }
+  .search-wrap { flex-basis: 100%; order: 1; }
+  .about-btn { order: 0; }
   .ig-link span { display: none; }
   .live-badge { display: none; }
   .filter-bar { padding: 0 1rem; }
