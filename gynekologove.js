@@ -228,9 +228,23 @@ async function tick(retried) {
   }
 }
 
+// ruční oprava konkrétních překlepů ve jméně/příjmení lékařů
+const NAME_RAW_FIXES = [
+  [C.krestni, '.Zuzana', 'Zuzana'],
+  [C.prijmeni, 'Jahelková - Švamberková', 'Jahelková Švamberková'],
+];
+function fixNameTypos() {
+  data.forEach(r => {
+    NAME_RAW_FIXES.forEach(([col, from, to]) => {
+      if ((r[col] || '').trim() === from) r[col] = to;
+    });
+  });
+}
+
 // ── Kraje select ─────────────────────────────────────────
 let lastKraje = '';
 function populateKraje() {
+  fixNameTypos();
   buildCityCanonical();
   buildFirstNameLookup();
   const kraje = [...new Set(data.map(r => r[C.kraj]).filter(Boolean))].sort();
