@@ -89,6 +89,7 @@ const CITY_COMBINED_OVERRIDES = {};
 [
   ['Studénka a Klimkovice', ['Studénka']],
   ['Studénka, Klimkovice', ['Studénka']],
+  ['Hlavní v Novém Městě na Moravě a vedlejší ordinace Vír', ['Nové Město na Moravě']],
 ].forEach(([raw, replacement]) => {
   CITY_COMBINED_OVERRIDES[baseNormalizeCity(raw)] = replacement;
 });
