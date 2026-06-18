@@ -78,6 +78,7 @@ const CITY_RAW_ALIASES = [
   ['Žďáru nad Sázavou', 'Žďár nad Sázavou'],
   ['Jablonec nad Nosou', 'Jablonec nad Nisou'],
   ['Ústí N.L.', 'Ústí nad Labem'],
+  ['Šunperk', 'Šumperk'],
 ];
 const CITY_TYPO_FIXES = {};
 CITY_RAW_ALIASES.forEach(([from, to]) => {
@@ -99,7 +100,7 @@ function splitMesta(str) {
   if (!trimmed) return [];
   const override = CITY_COMBINED_OVERRIDES[baseNormalizeCity(trimmed)];
   if (override) return override;
-  return trimmed.split(/[\/,]/).map(s => s.trim()).filter(Boolean);
+  return trimmed.split(/[\/,]|\s+a\s+/i).map(s => s.trim()).filter(Boolean);
 }
 
 // v Praze (kraj přesně "Praha") je obrovské množství různě psaných čtvrtí/adres -
@@ -175,7 +176,7 @@ function onKrajChange() {
   } else {
     const keys = new Set();
     data.filter(r => r[C.kraj] === kraj).forEach(r => simplifyMesto(r).forEach(raw => keys.add(normalizeCity(raw))));
-    const mesta = [...keys].map(key => ({ key, label: cityCanonical.get(key) || key })).sort((a, b) => a.label.localeCompare(b.label, 'cs'));
+    const mesta = [...keys].map(key => ({ key, label: cityCanonical.get(key) || key })).sort((a, b) => a.label.localeCompare(b.label, 'cs', { numeric: true }));
     mestoSel.innerHTML = '<option value="">Všechna města</option>' +
       mesta.map(m => `<option value="${m.key}">${m.label}</option>`).join('');
     mestoSel.value = '';
