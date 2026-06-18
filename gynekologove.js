@@ -118,6 +118,30 @@ function normalizeCity(s) {
   return CITY_TYPO_FIXES[key] || key;
 }
 
+// Když u recenze chybí křestní jméno, dohledá ho podle příjmení+kraje,
+// pokud existuje právě jedna jiná recenze se stejným příjmením a krajem, která jméno má.
+let firstNameLookup = new Map();
+function buildFirstNameLookup() {
+  firstNameLookup = new Map();
+  data.forEach(r => {
+    const prijmeni = (r[C.prijmeni] || '').trim().toLowerCase();
+    const krestni = (r[C.krestni] || '').trim();
+    if (!prijmeni || !krestni) return;
+    const key = prijmeni + '|' + (r[C.kraj] || '').trim();
+    if (!firstNameLookup.has(key)) firstNameLookup.set(key, new Set());
+    firstNameLookup.get(key).add(krestni);
+  });
+}
+
+function resolveFirstName(r) {
+  const krestni = (r[C.krestni] || '').trim();
+  if (krestni) return krestni;
+  const prijmeni = (r[C.prijmeni] || '').trim().toLowerCase();
+  if (!prijmeni) return '';
+  const candidates = firstNameLookup.get(prijmeni + '|' + (r[C.kraj] || '').trim());
+  return (candidates && candidates.size === 1) ? [...candidates][0] : '';
+}
+
 // pro každý normalizovaný klíč zvolí jako popisek nejčastěji se vyskytující variantu zápisu
 let cityCanonical = new Map();
 function buildCityCanonical() {
@@ -206,6 +230,7 @@ async function tick(retried) {
 let lastKraje = '';
 function populateKraje() {
   buildCityCanonical();
+  buildFirstNameLookup();
   const kraje = [...new Set(data.map(r => r[C.kraj]).filter(Boolean))].sort();
   const sig = kraje.join(',');
   if (sig === lastKraje) return;
@@ -244,7 +269,7 @@ function updateSuggestions() {
   const results = [];
   for (const r of data) {
     if (results.length >= 8) break;
-    const name = [r[C.krestni], r[C.prijmeni]].map(s => (s || '').trim()).filter(Boolean).join(' ');
+    const name = [resolveFirstName(r), r[C.prijmeni]].map(s => (s || '').trim()).filter(Boolean).join(' ');
     if (name && name.toLowerCase().includes(q) && !seen.has('n:' + name)) {
       seen.add('n:' + name);
       results.push({ label: name, type: 'lékař/ka' });
@@ -314,7 +339,7 @@ function render() {
   const minHvezdy = parseInt(document.getElementById('f-hvezdy').value) || 0;
 
   const filtered = data.filter(r => {
-    const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
+    const txt = [resolveFirstName(r), r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
     if (q && !txt.includes(q)) return false;
     if (kraj && r[C.kraj] !== kraj) return false;
     if (mesto && !simplifyMesto(r).some(raw => normalizeCity(raw) === mesto)) return false;
@@ -343,7 +368,7 @@ function render() {
   // Seskup podle jména doktora
   const groupMap = new Map();
   chipFiltered.forEach(r => {
-    const key = ((r[C.krestni]||'').trim() + ' ' + (r[C.prijmeni]||'').trim()).toLowerCase().replace(/\s+/g, ' ');
+    const key = (resolveFirstName(r) + ' ' + (r[C.prijmeni]||'').trim()).toLowerCase().replace(/\s+/g, ' ').trim();
     if (!groupMap.has(key)) groupMap.set(key, []);
     groupMap.get(key).push(r);
   });
@@ -358,7 +383,7 @@ function render() {
       return avg(b) - avg(a);
     }
     if (sort === 'az' || sort === 'za') {
-      const name = g => ((g[0][C.prijmeni]||'') + (g[0][C.krestni]||'')).toLowerCase().trim();
+      const name = g => ((g[0][C.prijmeni]||'') + resolveFirstName(g[0])).toLowerCase().trim();
       return sort === 'za' ? name(b).localeCompare(name(a), 'cs') : name(a).localeCompare(name(b), 'cs');
     }
     if (sort === 'nove') {
@@ -397,8 +422,9 @@ function render() {
 
 function buildCardHtml(reviews, i) {
     const r0 = reviews[0];
-    const name = [r0[C.prijmeni], r0[C.krestni]].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
-    const initials = ((r0[C.krestni]||'').trim().charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
+    const krestni0 = resolveFirstName(r0);
+    const name = [r0[C.prijmeni], krestni0].map(s => (s||'').trim()).filter(Boolean).join(' ') || 'Neznámý';
+    const initials = (krestni0.charAt(0) + (r0[C.prijmeni]||'').trim().charAt(0)).toUpperCase();
     const pohlaviLow = (r0[C.pohlavi]||'').toLowerCase();
     const genderIcon = pohlaviLow === 'žena'
       ? '<svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M12 13.2c-.5 0-.9.3-1.1.7l-4.4 7.6c-.3.6.1 1.3.8 1.3h9.4c.7 0 1.1-.7.8-1.3l-4.4-7.6c-.2-.4-.6-.7-1.1-.7z"/></svg>'
