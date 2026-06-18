@@ -57,7 +57,8 @@
   <div class="filter-bar">
     <div class="filter-inner">
       <a href="https://docs.google.com/forms/d/12ksXahejlHaKVpLlpbTjAoe_TlXfmYkehc8rq9K0gqc/viewform?edit_requested=true" target="_blank" rel="noopener" class="cta-btn">✏ Vyplň formulář</a>
-      <select id="f-kraj" onchange="updateFilterState(); render()"><option value="">Všechny kraje</option></select>
+      <select id="f-kraj" onchange="onKrajChange()"><option value="">Všechny kraje</option></select>
+      <select id="f-mesto" onchange="updateFilterState(); render()" style="display:none"><option value="">Všechna města</option></select>
       <select id="f-pohlavi" onchange="updateFilterState(); render()">
         <option value="">Pohlaví: vše</option>
         <option value="žena">Žena</option>
