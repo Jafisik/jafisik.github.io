@@ -61,24 +61,60 @@ function resetFilters() {
   render();
 }
 
-function splitMesta(str) {
-  return (str || '').split(/[\/,]/).map(s => s.trim()).filter(Boolean);
-}
-
-// ruční oprava konkrétních překlepů, které normalizace (velikost písmen/diakritika/pomlčky) nezachytí
-const CITY_TYPO_FIXES = {
-  'breclqv': 'breclav', // Břeclqv -> Břeclav
-};
-
-// normalizovaný klíč pro porovnávání měst napsaných různě (velikost písmen, diakritika, mezery kolem pomlčky, závorka na konci)
-function normalizeCity(s) {
-  const key = (s || '')
+// normalizovaný klíč bez ručních oprav (velikost písmen, diakritika, mezery kolem pomlčky, závorka na konci)
+function baseNormalizeCity(s) {
+  return (s || '')
     .trim()
     .replace(/\s*\([^)]*\)\s*$/, '')
     .toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/\s*-\s*/g, '-')
     .replace(/\s+/g, ' ');
+}
+
+// ruční oprava konkrétních překlepů/skloňování, které automatická normalizace nezachytí
+const CITY_RAW_ALIASES = [
+  ['Břeclqv', 'Břeclav'],
+  ['Žďáru nad Sázavou', 'Žďár nad Sázavou'],
+  ['Jablonec nad Nosou', 'Jablonec nad Nisou'],
+  ['Ústí N.L.', 'Ústí nad Labem'],
+];
+const CITY_TYPO_FIXES = {};
+CITY_RAW_ALIASES.forEach(([from, to]) => {
+  CITY_TYPO_FIXES[baseNormalizeCity(from)] = baseNormalizeCity(to);
+});
+
+// kombinované zápisy, které se nemají rozdělit na obě města, ale zobrazit jen pod jedním
+const CITY_COMBINED_OVERRIDES = {};
+[
+  ['Studénka a Klimkovice', ['Studénka']],
+  ['Studénka, Klimkovice', ['Studénka']],
+].forEach(([raw, replacement]) => {
+  CITY_COMBINED_OVERRIDES[baseNormalizeCity(raw)] = replacement;
+});
+
+function splitMesta(str) {
+  const trimmed = (str || '').trim();
+  if (!trimmed) return [];
+  const override = CITY_COMBINED_OVERRIDES[baseNormalizeCity(trimmed)];
+  if (override) return override;
+  return trimmed.split(/[\/,]/).map(s => s.trim()).filter(Boolean);
+}
+
+// v Praze (kraj přesně "Praha") je obrovské množství různě psaných čtvrtí/adres -
+// sloučíme je na "Praha N" (pokud je v textu číslo) nebo jen "Praha"
+function simplifyMesto(r) {
+  const raw = r[C.mesto] || '';
+  if (r[C.kraj] === 'Praha') {
+    const m = raw.match(/praha\D{0,5}(\d{1,2})\b/i);
+    return [m ? ('Praha ' + m[1]) : 'Praha'];
+  }
+  return splitMesta(raw);
+}
+
+// normalizovaný klíč pro porovnávání měst napsaných různě
+function normalizeCity(s) {
+  const key = baseNormalizeCity(s);
   return CITY_TYPO_FIXES[key] || key;
 }
 
@@ -87,7 +123,7 @@ let cityCanonical = new Map();
 function buildCityCanonical() {
   const groups = new Map();
   data.forEach(r => {
-    splitMesta(r[C.mesto]).forEach(raw => {
+    simplifyMesto(r).forEach(raw => {
       const key = normalizeCity(raw);
       if (!key) return;
       if (!groups.has(key)) groups.set(key, new Map());
@@ -113,7 +149,7 @@ function onKrajChange() {
     mestoSel.value = '';
   } else {
     const keys = new Set();
-    data.filter(r => r[C.kraj] === kraj).forEach(r => splitMesta(r[C.mesto]).forEach(raw => keys.add(normalizeCity(raw))));
+    data.filter(r => r[C.kraj] === kraj).forEach(r => simplifyMesto(r).forEach(raw => keys.add(normalizeCity(raw))));
     const mesta = [...keys].map(key => ({ key, label: cityCanonical.get(key) || key })).sort((a, b) => a.label.localeCompare(b.label, 'cs'));
     mestoSel.innerHTML = '<option value="">Všechna města</option>' +
       mesta.map(m => `<option value="${m.key}">${m.label}</option>`).join('');
@@ -216,7 +252,7 @@ function updateSuggestions() {
   }
   outer:
   for (const r of data) {
-    for (const mesto of splitMesta(r[C.mesto])) {
+    for (const mesto of simplifyMesto(r)) {
       if (results.length >= 8) break outer;
       const key = normalizeCity(mesto);
       if (mesto.toLowerCase().includes(q) && !seen.has('m:' + key)) {
@@ -281,7 +317,7 @@ function render() {
     const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
     if (q && !txt.includes(q)) return false;
     if (kraj && r[C.kraj] !== kraj) return false;
-    if (mesto && !splitMesta(r[C.mesto]).some(raw => normalizeCity(raw) === mesto)) return false;
+    if (mesto && !simplifyMesto(r).some(raw => normalizeCity(raw) === mesto)) return false;
     if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
     return true;
   });
