@@ -53,7 +53,7 @@ function resetFilters() {
   Object.values(chipFilters).forEach(set => set.clear());
   document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
   document.getElementById('search').value = '';
-  ['f-kraj', 'f-mesto', 'f-pohlavi', 'f-hvezdy', 'f-lgbt'].forEach(id => {
+  ['f-kraj', 'f-mesto', 'f-pohlavi', 'f-hvezdy'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('f-mesto').style.display = 'none';
@@ -183,7 +183,7 @@ function populateKraje() {
 
 // ── Filters ──────────────────────────────────────────────
 function updateFilterState() {
-  ['f-kraj','f-mesto','f-pohlavi','f-hvezdy','f-lgbt'].forEach(id => {
+  ['f-kraj','f-mesto','f-pohlavi','f-hvezdy'].forEach(id => {
     const el = document.getElementById(id);
     el.classList.toggle('active', el.value !== '');
   });
@@ -276,7 +276,6 @@ function render() {
   const mesto = document.getElementById('f-mesto').value;
   const pohlavi = document.getElementById('f-pohlavi').value;
   const minHvezdy = parseInt(document.getElementById('f-hvezdy').value) || 0;
-  const onlyLgbt = document.getElementById('f-lgbt').value === 'ano';
 
   const filtered = data.filter(r => {
     const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
@@ -284,7 +283,6 @@ function render() {
     if (kraj && r[C.kraj] !== kraj) return false;
     if (mesto && !splitMesta(r[C.mesto]).some(raw => normalizeCity(raw) === mesto)) return false;
     if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
-    if (onlyLgbt && !(r[C.lgbt]||'').toLowerCase().includes('ano')) return false;
     return true;
   });
 
