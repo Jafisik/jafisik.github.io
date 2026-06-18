@@ -65,6 +65,46 @@ function splitMesta(str) {
   return (str || '').split(/[\/,]/).map(s => s.trim()).filter(Boolean);
 }
 
+// ruční oprava konkrétních překlepů, které normalizace (velikost písmen/diakritika/pomlčky) nezachytí
+const CITY_TYPO_FIXES = {
+  'breclqv': 'breclav', // Břeclqv -> Břeclav
+};
+
+// normalizovaný klíč pro porovnávání měst napsaných různě (velikost písmen, diakritika, mezery kolem pomlčky, závorka na konci)
+function normalizeCity(s) {
+  const key = (s || '')
+    .trim()
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/\s*-\s*/g, '-')
+    .replace(/\s+/g, ' ');
+  return CITY_TYPO_FIXES[key] || key;
+}
+
+// pro každý normalizovaný klíč zvolí jako popisek nejčastěji se vyskytující variantu zápisu
+let cityCanonical = new Map();
+function buildCityCanonical() {
+  const groups = new Map();
+  data.forEach(r => {
+    splitMesta(r[C.mesto]).forEach(raw => {
+      const key = normalizeCity(raw);
+      if (!key) return;
+      if (!groups.has(key)) groups.set(key, new Map());
+      const variants = groups.get(key);
+      variants.set(raw, (variants.get(raw) || 0) + 1);
+    });
+  });
+  cityCanonical = new Map();
+  groups.forEach((variants, key) => {
+    let best = null, bestCount = -1;
+    variants.forEach((count, raw) => {
+      if (count > bestCount) { bestCount = count; best = raw; }
+    });
+    cityCanonical.set(key, best);
+  });
+}
+
 function onKrajChange() {
   const kraj = document.getElementById('f-kraj').value;
   const mestoSel = document.getElementById('f-mesto');
@@ -72,9 +112,11 @@ function onKrajChange() {
     mestoSel.style.display = 'none';
     mestoSel.value = '';
   } else {
-    const mesta = [...new Set(data.filter(r => r[C.kraj] === kraj).flatMap(r => splitMesta(r[C.mesto])))].sort();
+    const keys = new Set();
+    data.filter(r => r[C.kraj] === kraj).forEach(r => splitMesta(r[C.mesto]).forEach(raw => keys.add(normalizeCity(raw))));
+    const mesta = [...keys].map(key => ({ key, label: cityCanonical.get(key) || key })).sort((a, b) => a.label.localeCompare(b.label, 'cs'));
     mestoSel.innerHTML = '<option value="">Všechna města</option>' +
-      mesta.map(m => `<option value="${m}">${m}</option>`).join('');
+      mesta.map(m => `<option value="${m.key}">${m.label}</option>`).join('');
     mestoSel.value = '';
     mestoSel.style.display = '';
   }
@@ -127,6 +169,7 @@ async function tick(retried) {
 // ── Kraje select ─────────────────────────────────────────
 let lastKraje = '';
 function populateKraje() {
+  buildCityCanonical();
   const kraje = [...new Set(data.map(r => r[C.kraj]).filter(Boolean))].sort();
   const sig = kraje.join(',');
   if (sig === lastKraje) return;
@@ -175,9 +218,10 @@ function updateSuggestions() {
   for (const r of data) {
     for (const mesto of splitMesta(r[C.mesto])) {
       if (results.length >= 8) break outer;
-      if (mesto.toLowerCase().includes(q) && !seen.has('m:' + mesto)) {
-        seen.add('m:' + mesto);
-        results.push({ label: mesto, type: 'město' });
+      const key = normalizeCity(mesto);
+      if (mesto.toLowerCase().includes(q) && !seen.has('m:' + key)) {
+        seen.add('m:' + key);
+        results.push({ label: cityCanonical.get(key) || mesto, type: 'město' });
       }
     }
   }
@@ -238,7 +282,7 @@ function render() {
     const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
     if (q && !txt.includes(q)) return false;
     if (kraj && r[C.kraj] !== kraj) return false;
-    if (mesto && !splitMesta(r[C.mesto]).includes(mesto)) return false;
+    if (mesto && !splitMesta(r[C.mesto]).some(raw => normalizeCity(raw) === mesto)) return false;
     if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
     if (onlyLgbt && !(r[C.lgbt]||'').toLowerCase().includes('ano')) return false;
     return true;
