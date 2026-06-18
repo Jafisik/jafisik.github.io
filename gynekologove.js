@@ -61,6 +61,10 @@ function resetFilters() {
   render();
 }
 
+function splitMesta(str) {
+  return (str || '').split(/[\/,]/).map(s => s.trim()).filter(Boolean);
+}
+
 function onKrajChange() {
   const kraj = document.getElementById('f-kraj').value;
   const mestoSel = document.getElementById('f-mesto');
@@ -68,7 +72,7 @@ function onKrajChange() {
     mestoSel.style.display = 'none';
     mestoSel.value = '';
   } else {
-    const mesta = [...new Set(data.filter(r => r[C.kraj] === kraj).map(r => r[C.mesto]).filter(Boolean))].sort();
+    const mesta = [...new Set(data.filter(r => r[C.kraj] === kraj).flatMap(r => splitMesta(r[C.mesto])))].sort();
     mestoSel.innerHTML = '<option value="">Všechna města</option>' +
       mesta.map(m => `<option value="${m}">${m}</option>`).join('');
     mestoSel.value = '';
@@ -167,12 +171,14 @@ function updateSuggestions() {
       results.push({ label: name, type: 'lékař/ka' });
     }
   }
+  outer:
   for (const r of data) {
-    if (results.length >= 8) break;
-    const mesto = (r[C.mesto] || '').trim();
-    if (mesto && mesto.toLowerCase().includes(q) && !seen.has('m:' + mesto)) {
-      seen.add('m:' + mesto);
-      results.push({ label: mesto, type: 'město' });
+    for (const mesto of splitMesta(r[C.mesto])) {
+      if (results.length >= 8) break outer;
+      if (mesto.toLowerCase().includes(q) && !seen.has('m:' + mesto)) {
+        seen.add('m:' + mesto);
+        results.push({ label: mesto, type: 'město' });
+      }
     }
   }
   for (const r of data) {
@@ -232,7 +238,7 @@ function render() {
     const txt = [r[C.krestni], r[C.prijmeni], r[C.ordinace], r[C.mesto], r[C.kraj]].join(' ').toLowerCase();
     if (q && !txt.includes(q)) return false;
     if (kraj && r[C.kraj] !== kraj) return false;
-    if (mesto && r[C.mesto] !== mesto) return false;
+    if (mesto && !splitMesta(r[C.mesto]).includes(mesto)) return false;
     if (pohlavi && (r[C.pohlavi]||'').toLowerCase() !== pohlavi) return false;
     if (onlyLgbt && !(r[C.lgbt]||'').toLowerCase().includes('ano')) return false;
     return true;
