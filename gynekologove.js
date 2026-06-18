@@ -124,6 +124,73 @@ function updateFilterState() {
   });
 }
 
+// ── Vyhledávací našeptávač ───────────────────────────────
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+let currentSuggestions = [];
+
+function updateSuggestions() {
+  const box = document.getElementById('search-suggestions');
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  if (!q || !data.length) {
+    box.classList.remove('open');
+    box.innerHTML = '';
+    return;
+  }
+  const seen = new Set();
+  const results = [];
+  for (const r of data) {
+    if (results.length >= 8) break;
+    const name = [r[C.krestni], r[C.prijmeni]].map(s => (s || '').trim()).filter(Boolean).join(' ');
+    if (name && name.toLowerCase().includes(q) && !seen.has('n:' + name)) {
+      seen.add('n:' + name);
+      results.push({ label: name, type: 'lékař/ka' });
+    }
+  }
+  for (const r of data) {
+    if (results.length >= 8) break;
+    const mesto = (r[C.mesto] || '').trim();
+    if (mesto && mesto.toLowerCase().includes(q) && !seen.has('m:' + mesto)) {
+      seen.add('m:' + mesto);
+      results.push({ label: mesto, type: 'město' });
+    }
+  }
+  for (const r of data) {
+    if (results.length >= 8) break;
+    const ord = (r[C.ordinace] || '').trim();
+    if (ord && ord.toLowerCase().includes(q) && !seen.has('o:' + ord)) {
+      seen.add('o:' + ord);
+      results.push({ label: ord, type: 'ordinace' });
+    }
+  }
+  currentSuggestions = results;
+  if (!results.length) {
+    box.classList.remove('open');
+    box.innerHTML = '';
+    return;
+  }
+  box.innerHTML = results.map((r, idx) =>
+    `<button class="search-suggestion" type="button" onclick="selectSuggestion(${idx})">${escapeHtml(r.label)}<span class="sug-type">${r.type}</span></button>`
+  ).join('');
+  box.classList.add('open');
+}
+
+function selectSuggestion(idx) {
+  const value = currentSuggestions[idx] && currentSuggestions[idx].label;
+  if (value == null) return;
+  document.getElementById('search').value = value;
+  document.getElementById('search-suggestions').classList.remove('open');
+  render();
+}
+
+document.addEventListener('click', e => {
+  const box = document.getElementById('search-suggestions');
+  if (!box) return;
+  if (!e.target.closest('.search-wrap')) box.classList.remove('open');
+});
+
 // ── Parsování data z Google Forms (D.M.YYYY HH:MM:SS) ──────
 function parseDatum(str) {
   if (!str) return 0;
@@ -416,6 +483,7 @@ function toggleProjectIntro() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('about-modal').classList.remove('open');
+    document.getElementById('search-suggestions').classList.remove('open');
   }
 });
 launchApp();

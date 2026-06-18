@@ -21,7 +21,8 @@
       <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="ig-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@bezhormonu</a>
       <div class="search-wrap">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render()">
+        <input type="text" id="search" placeholder="Hledat podle jména, města nebo ordinace…" oninput="render(); updateSuggestions()" onfocus="updateSuggestions()" autocomplete="off">
+        <div class="search-suggestions" id="search-suggestions"></div>
       </div>
       <button class="about-btn" id="btn-o-mne" onclick="document.getElementById('about-modal').classList.add('open')">O mně</button>
     </div>
