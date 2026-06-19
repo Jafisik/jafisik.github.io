@@ -60,7 +60,7 @@
       <select id="f-kraj" onchange="onKrajChange()"><option value="">Všechny kraje</option></select>
       <select id="f-mesto" onchange="updateFilterState(); render()" style="display:none"><option value="">Všechna města</option></select>
       <select id="f-pohlavi" onchange="updateFilterState(); render()">
-        <option value="">Pohlaví: vše</option>
+        <option value="">Pohlaví lékaře: vše</option>
         <option value="žena">Žena</option>
         <option value="muž">Muž</option>
       </select>
@@ -111,6 +111,7 @@
         <button class="sb-toggle" onclick="toggleGroup('poplatky')">Poplatky <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="sb-options" id="grp-poplatky">
           <button class="chip" onclick="toggleChip('poplatky','Ne')">Bez poplatků</button>
+          <button class="chip" onclick="toggleChip('poplatky','Ano')">S poplatky</button>
         </div>
       </div>
       <div class="sb-group">
@@ -119,13 +120,6 @@
           <button class="chip" onclick="toggleChip('hac','Nepodporuje')">Nepodporuje</button>
           <button class="chip" onclick="toggleChip('hac','Neutrální')">Neutrální</button>
           <button class="chip" onclick="toggleChip('hac','Podporuje')">Podporuje</button>
-        </div>
-      </div>
-      <div class="sb-group">
-        <button class="sb-toggle" onclick="toggleGroup('ultrazvuk')">3D ultrazvuk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="sb-options" id="grp-ultrazvuk">
-          <button class="chip" onclick="toggleChip('ultrazvuk','Má 3D')">Má 3D</button>
-          <button class="chip" onclick="toggleChip('ultrazvuk','Posílá na něj jinam')">Posílá jinam</button>
         </div>
       </div>
       <div class="sb-group">

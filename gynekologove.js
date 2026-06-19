@@ -25,7 +25,7 @@ const C = {
 // ── State ────────────────────────────────────────────────
 let data = [];
 let refreshTimer = null;
-const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), ultrazvuk: new Set(), lgbtq: new Set() };
+const chipFilters = { vek: new Set(), vybaveni: new Set(), vzdel: new Set(), poplatky: new Set(), hac: new Set(), lgbtq: new Set() };
 
 function toggleGroup(id) {
   const opts = document.getElementById('grp-' + id);
@@ -364,18 +364,14 @@ function render() {
   });
 
   // Chip filtry — AND mezi kategoriemi, OR uvnitř kategorie
-  const colMap = { vek: C.vek, vybaveni: C.vybaveni, vzdel: C.vzdel, poplatky: C.poplatky, hac: C.hac, ultrazvuk: C.ultrazvuk, lgbtq: C.lgbt };
+  const colMap = { vek: C.vek, vybaveni: C.vybaveni, vzdel: C.vzdel, poplatky: C.poplatky, hac: C.hac, lgbtq: C.lgbt };
   const chipFiltered = filtered.filter(r => {
     for (const [cat, vals] of Object.entries(chipFilters)) {
       if (!vals.size) continue;
       const col = colMap[cat];
       const v = (r[col]||'').trim();
-      if (cat === 'poplatky') {
-        if (![...vals].some(() => /^ne/i.test(v))) return false;
-      } else {
-        // "Ne" musí být přesná shoda, jinak by podřetězec "ne" matchnul i "Nevím"
-        if (![...vals].some(sel => sel.toLowerCase() === 'ne' ? v.toLowerCase() === 'ne' : v.toLowerCase().includes(sel.toLowerCase()))) return false;
-      }
+      // "Ne" musí být přesná shoda, jinak by podřetězec "ne" matchnul i "Nevím"
+      if (![...vals].some(sel => sel.toLowerCase() === 'ne' ? v.toLowerCase() === 'ne' : v.toLowerCase().includes(sel.toLowerCase()))) return false;
     }
     return true;
   });
@@ -461,7 +457,7 @@ function buildCardHtml(reviews, i) {
       const rStars = '★'.repeat(hvezdy) + `<span class="empty-star">${'★'.repeat(5 - hvezdy)}</span>`;
       const grid = [
         { l: 'Věk lékaře', v: r[C.vek] },
-        { l: 'Pohlaví', v: r[C.pohlavi] },
+        { l: 'Pohlaví lékaře', v: r[C.pohlavi] },
         { l: 'Poplatky', v: r[C.poplatky] },
         { l: 'Ceny', v: r[C.ceny] },
         { l: 'Objednávací lhůta', v: r[C.objednani] },
