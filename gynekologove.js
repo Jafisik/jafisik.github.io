@@ -372,10 +372,9 @@ function render() {
       const v = (r[col]||'').trim();
       if (cat === 'poplatky') {
         if (![...vals].some(() => /^ne/i.test(v))) return false;
-      } else if (cat === 'lgbtq') {
-        if (![...vals].some(sel => sel === 'ne' ? v.toLowerCase() === 'ne' : v.toLowerCase().includes(sel))) return false;
       } else {
-        if (![...vals].some(sel => v.toLowerCase().includes(sel.toLowerCase()))) return false;
+        // "Ne" musí být přesná shoda, jinak by podřetězec "ne" matchnul i "Nevím"
+        if (![...vals].some(sel => sel.toLowerCase() === 'ne' ? v.toLowerCase() === 'ne' : v.toLowerCase().includes(sel.toLowerCase()))) return false;
       }
     }
     return true;
