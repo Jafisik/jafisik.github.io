@@ -69,7 +69,8 @@ function baseNormalizeCity(s) {
     .toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/\s*-\s*/g, '-')
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, ' ')
+    .replace(/-/g, ' '); // pomlčka a mezera jako oddělovač slov se pro porovnání berou jako stejné
 }
 
 // ruční oprava konkrétních překlepů/skloňování, které automatická normalizace nezachytí
@@ -79,6 +80,7 @@ const CITY_RAW_ALIASES = [
   ['Jablonec nad Nosou', 'Jablonec nad Nisou'],
   ['Ústí N.L.', 'Ústí nad Labem'],
   ['Šunperk', 'Šumperk'],
+  ['Brni', 'Brno'],
 ];
 const CITY_TYPO_FIXES = {};
 CITY_RAW_ALIASES.forEach(([from, to]) => {
