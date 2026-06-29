@@ -7,11 +7,20 @@
   word-break: break-word;
 }
 
-.vysazeni-layout .stats-row {
-  justify-content: center;
+.vysazeni-filter-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
 }
 
-.vysazeni-layout .stats-bar {
-  flex: none;
-  justify-content: center;
+.vysazeni-filter-inner .cta-btn { justify-self: start; }
+.vysazeni-filter-inner .stats-bar { justify-self: center; margin: 0; padding: 0; font-size: 13px; color: var(--text-muted); display: flex; align-items: baseline; gap: 6px; }
+.vysazeni-filter-inner .stats-bar strong { font-size: 22px; font-weight: 700; color: var(--text); }
+.vysazeni-filter-inner #f-sort { justify-self: end; }
+
+.vysazeni-layout .list {
+  max-width: 1000px;
+  margin: 1rem auto 3rem;
 }

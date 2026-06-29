@@ -28,8 +28,9 @@
   <div class="project-intro">
     <div class="project-intro-inner">
       <p><strong>Zkušenosti s vysazením hormonální antikoncepce</strong></p>
+      <p>Upozorňuji, že nejsem odborník a nechci Vás těmito příspěvky k něčemu nutit. </p>
       <div class="project-intro-extra" id="project-intro-extra">
-        <p>Lorem ipsum</p>
+        <p>Je na rozhodnutí každé z Vás jak se svým tělem naloží a samy musíte vědět, co je pro Vás nejlepší. Pokud máte větší zdravotní komplikace, určitě vše konzultujte se svým doktorem. Tento profil má pouze funkci informativní a věřím, že někomu můžou tyto zkušenosti pomoct s vlastním rozhodnutím vysadit či nikoliv.</p>
       </div>
       <button class="project-intro-toggle" id="project-intro-toggle" onclick="toggleProjectIntro()">Číst více</button>
     </div>
@@ -48,9 +49,10 @@
   </div>
 
   <div class="filter-bar">
-    <div class="filter-inner">
+    <div class="filter-inner vysazeni-filter-inner">
       <a href="https://docs.google.com/forms/d/1Rsvylflp9iAKqQtGBqlP5KCn0UOLpATKBwca8TxE18w/viewform" target="_blank" rel="noopener" class="cta-btn">✏ Podělit se o svůj příběh</a>
-      <select id="f-sort" onchange="render()" style="margin-left:auto">
+      <div class="stats-bar" id="stats"></div>
+      <select id="f-sort" onchange="render()">
         <option value="nove">Nejnovější</option>
         <option value="stare">Nejstarší</option>
       </select>
@@ -59,9 +61,6 @@
 
   <div class="layout vysazeni-layout">
     <div class="main-content">
-      <div class="stats-row">
-        <div class="stats-bar" id="stats"></div>
-      </div>
       <div class="list" id="list"></div>
     </div>
   </div>

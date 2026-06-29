@@ -85,9 +85,7 @@ function render() {
     return parseDatum(b[VC.datum]) - parseDatum(a[VC.datum]); // nove (default)
   });
 
-  document.getElementById('stats').innerHTML = `
-    <div class="stat"><strong>${filtered.length}</strong>příběhů</div>
-  `;
+  document.getElementById('stats').innerHTML = `<strong>${filtered.length}</strong> příběhů`;
 
   if (!filtered.length) {
     document.getElementById('list').innerHTML = '<div class="empty">Nic nenalezeno.</div>';
