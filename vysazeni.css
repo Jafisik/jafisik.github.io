@@ -26,6 +26,10 @@
   margin: 1rem auto 3rem;
 }
 
+.vysazeni-layout .avatar {
+  display: none;
+}
+
 .vysazeni-layout .detail-section:first-child {
   margin-top: 0;
   padding-top: 0;
