@@ -14,48 +14,6 @@ const VC = {
 let data = [];
 let refreshTimer = null;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-const chipFilters = { vek: new Set(), ochrana: new Set(), lituje: new Set() };
-
-// ── Odhad věku z pole jméno+věk ──────────────────────────
-function extractAge(jmenoVek) {
-  const m = (jmenoVek || '').match(/(\d{1,2})/);
-  return m ? parseInt(m[1], 10) : null;
-}
-
-function ageGroup(jmenoVek) {
-  const age = extractAge(jmenoVek);
-  if (age == null) return null;
-  if (age < 20) return 'Do 20 let';
-  if (age < 25) return '20-25 let';
-  if (age < 30) return '25-30 let';
-  return 'Nad 30 let';
-}
-
-// ── Klíčová slova v "ochrana po vysazení" (může platit více najednou) ──
-function ochranaTags(text) {
-  const t = (text || '').toLowerCase();
-  const tags = [];
-  if (/kondom/.test(t)) tags.push('Kondom');
-  if (/přerušovan|prerusovan/.test(t)) tags.push('Přerušovaný styk');
-  if (/žádn|ziadn|nechrán|bez ochrany/.test(t)) tags.push('Žádná ochrana');
-  if (/abstinence|plodných dnech|symptotermáln|sympto|temperatur|sledování cyklu|fam\b/.test(t)) tags.push('Přirozené metody');
-  if (/tělísko|pesar/.test(t)) tags.push('Tělísko/pesar');
-  return tags;
-}
-
-// ── Heuristika "lituje / nelituje" z volného textu ──────
-function litujeCategory(text) {
-  const t = (text || '').toLowerCase();
-  if (!t.trim()) return null;
-  const withoutNelituje = t.replace(/nelitu\w*/g, '§');
-  const hasNelituje = /nelitu/.test(t) || /^\s*ne\b/.test(t);
-  const hasLituje = /litu/.test(withoutNelituje);
-  if (hasNelituje && hasLituje) return 'Smíšené';
-  if (hasNelituje) return 'Nelituje';
-  if (hasLituje) return 'Lituje';
-  if (/^\s*ano\b|^\s*jo\b/.test(t)) return 'Lituje';
-  return 'Smíšené';
-}
 
 // ── Parsování data z Google Forms (D.M.YYYY HH:MM:SS) ──────
 function parseDatum(str) {
@@ -109,52 +67,14 @@ async function tick(retried) {
   }
 }
 
-// ── Filtry (chips) ───────────────────────────────────────
-function toggleGroup(id) {
-  const opts = document.getElementById('grp-' + id);
-  const btn = opts.previousElementSibling;
-  opts.classList.toggle('open');
-  btn.classList.toggle('open');
-}
-
-function toggleFiltersPanel() {
-  document.getElementById('sidebar-filters').classList.toggle('open');
-  document.getElementById('filters-toggle-btn').classList.toggle('open');
-}
-
-function toggleChip(cat, val) {
-  chipFilters[cat].has(val) ? chipFilters[cat].delete(val) : chipFilters[cat].add(val);
-  document.querySelectorAll('.chip').forEach(el => {
-    const elCat = el.getAttribute('onclick').match(/toggleChip\('(\w+)'/)[1];
-    const elVal = el.getAttribute('onclick').match(/'([^']+)'\)$/)[1];
-    el.classList.toggle('active', chipFilters[elCat]?.has(elVal));
-  });
-  render();
-}
-
-function resetFilters() {
-  Object.values(chipFilters).forEach(set => set.clear());
-  document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
-  document.getElementById('search').value = '';
-  render();
-}
-
 // ── Render ───────────────────────────────────────────────
 function render() {
   const q = document.getElementById('search').value.trim().toLowerCase();
 
   const filtered = data.filter(r => {
-    if (q) {
-      const txt = r.join(' ').toLowerCase();
-      if (!txt.includes(q)) return false;
-    }
-    if (chipFilters.vek.size && !chipFilters.vek.has(ageGroup(r[VC.jmenoVek]))) return false;
-    if (chipFilters.ochrana.size) {
-      const tags = ochranaTags(r[VC.ochranaPo]);
-      if (![...chipFilters.ochrana].some(sel => tags.includes(sel))) return false;
-    }
-    if (chipFilters.lituje.size && !chipFilters.lituje.has(litujeCategory(r[VC.lituje]))) return false;
-    return true;
+    if (!q) return true;
+    const txt = r.join(' ').toLowerCase();
+    return txt.includes(q);
   });
 
   const sort = document.getElementById('f-sort').value;

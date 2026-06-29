@@ -60,43 +60,6 @@
   </div>
 
   <div class="layout vysazeni-layout">
-    <button class="filters-toggle-btn" id="filters-toggle-btn" onclick="toggleFiltersPanel()">
-      Filtry
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <aside class="sidebar" id="sidebar-filters">
-      <button class="reset-filters-btn" onclick="resetFilters()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        Resetovat filtry
-      </button>
-      <div class="sb-group">
-        <button class="sb-toggle" onclick="toggleGroup('vek')">Věk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="sb-options" id="grp-vek">
-          <button class="chip" onclick="toggleChip('vek','Do 20 let')">Do 20 let</button>
-          <button class="chip" onclick="toggleChip('vek','20-25 let')">20–25 let</button>
-          <button class="chip" onclick="toggleChip('vek','25-30 let')">25–30 let</button>
-          <button class="chip" onclick="toggleChip('vek','Nad 30 let')">Nad 30 let</button>
-        </div>
-      </div>
-      <div class="sb-group">
-        <button class="sb-toggle" onclick="toggleGroup('ochrana')">Ochrana po vysazení <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="sb-options" id="grp-ochrana">
-          <button class="chip" onclick="toggleChip('ochrana','Kondom')">Kondom</button>
-          <button class="chip" onclick="toggleChip('ochrana','Přerušovaný styk')">Přerušovaný styk</button>
-          <button class="chip" onclick="toggleChip('ochrana','Žádná ochrana')">Žádná ochrana</button>
-          <button class="chip" onclick="toggleChip('ochrana','Přirozené metody')">Přirozené metody</button>
-          <button class="chip" onclick="toggleChip('ochrana','Tělísko/pesar')">Tělísko/pesar</button>
-        </div>
-      </div>
-      <div class="sb-group">
-        <button class="sb-toggle" onclick="toggleGroup('lituje')">Lituje vysazení? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="sb-options" id="grp-lituje">
-          <button class="chip" onclick="toggleChip('lituje','Nelituje')">Nelituje</button>
-          <button class="chip" onclick="toggleChip('lituje','Lituje')">Lituje</button>
-          <button class="chip" onclick="toggleChip('lituje','Smíšené')">Smíšené/nejasné</button>
-        </div>
-      </div>
-    </aside>
     <div class="main-content">
       <div class="stats-row">
         <div class="stats-bar" id="stats"></div>
