@@ -24,3 +24,36 @@
   max-width: 1000px;
   margin: 1rem auto 3rem;
 }
+
+/* Na desktopu jsou témata vždy rozbalená, nejde to schovat kliknutím */
+.vysazeni-layout .tema-toggle {
+  pointer-events: none;
+  cursor: default;
+}
+
+.vysazeni-layout .tema-toggle svg {
+  display: none;
+}
+
+.vysazeni-layout #grp-tema {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .vysazeni-layout .tema-toggle {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .vysazeni-layout .tema-toggle svg {
+    display: inline;
+  }
+
+  .vysazeni-layout #grp-tema {
+    display: none !important;
+  }
+
+  .vysazeni-layout #grp-tema.open {
+    display: flex !important;
+  }
+}
