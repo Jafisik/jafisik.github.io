@@ -1,0 +1,46 @@
+name: Update vysazeni data
+
+on:
+  schedule:
+    - cron: '15 * * * *'  # každou hodinu (offset, aby nešlo souběžně s update-data)
+  workflow_dispatch:      # nebo spustit ručně
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch CSV and convert to JSON
+        run: |
+          python3 << 'EOF'
+          import csv, json, urllib.request, io
+
+          url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSCYBBmBWdXp_g-h-WY05PMPqfvgnx6BTLq8y574MFW-2EyUxf5QNY42GurQ2r79dKwhxiyg2FImB0F/pub?output=csv'
+
+          with urllib.request.urlopen(url) as r:
+              content = r.read().decode('utf-8')
+
+          reader = csv.reader(io.StringIO(content))
+          rows = list(reader)
+          data = [row for row in rows[1:] if any(c.strip() for c in row[:2])]
+
+          with open('vysazeni-data.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+
+          print(f"Uloženo {len(data)} záznamů")
+          EOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vysazeni-data.json
+          if git diff --staged --quiet; then
+            echo "Žádné změny"
+          else
+            git commit -m "Update vysazeni-data.json"
+            git push
+          fi

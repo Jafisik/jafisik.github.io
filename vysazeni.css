@@ -1,0 +1,8 @@
+.story-preview {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
