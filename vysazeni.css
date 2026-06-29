@@ -6,3 +6,12 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+.vysazeni-layout .stats-row {
+  justify-content: center;
+}
+
+.vysazeni-layout .stats-bar {
+  flex: none;
+  justify-content: center;
+}
