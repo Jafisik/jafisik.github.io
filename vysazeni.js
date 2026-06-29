@@ -182,9 +182,6 @@ function buildCardHtml(r, i) {
   const initial = name.charAt(0).toUpperCase();
   const datePart = (r[VC.datum] || '').split(' ')[0];
   const preview = (r[VC.duvodKonecny] || r[VC.poVysazeni] || '').trim();
-  const vek = ageGroup(r[VC.jmenoVek]);
-  const ochrana = ochranaTags(r[VC.ochranaPo]);
-  const lituje = litujeCategory(r[VC.lituje]);
 
   const sections = [
     { l: 'Historie užívání a vysazení HA', v: r[VC.haHistorie] },
@@ -206,13 +203,6 @@ function buildCardHtml(r, i) {
           <div class="story-preview">${escapeHtml(preview.slice(0, 140))}${preview.length > 140 ? '…' : ''}</div>
         </div>
         <svg class="chevron" id="chev-${i}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="badges" onclick="toggle(${i})" style="cursor:pointer">
-        ${vek ? `<span class="badge b-kraj">${vek}</span>` : ''}
-        ${lituje === 'Nelituje' ? '<span class="badge b-nofees">Nelituje</span>' : ''}
-        ${lituje === 'Lituje' ? '<span class="badge b-fees">Lituje</span>' : ''}
-        ${lituje === 'Smíšené' ? '<span class="badge b-lgbt">Smíšené</span>' : ''}
-        ${ochrana.map(t => `<span class="badge b-kraj">${t}</span>`).join('')}
       </div>
       <div class="detail" id="det-${i}">
         ${sections.map(s => `
