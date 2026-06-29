@@ -92,13 +92,6 @@ async function tick(retried) {
 }
 
 // ── Filtry (chips) ───────────────────────────────────────
-function toggleGroup(id) {
-  const opts = document.getElementById('grp-' + id);
-  const btn = opts.previousElementSibling;
-  opts.classList.toggle('open');
-  btn.classList.toggle('open');
-}
-
 function toggleFiltersPanel() {
   document.getElementById('sidebar-filters').classList.toggle('open');
   document.getElementById('filters-toggle-btn').classList.toggle('open');
