@@ -14,6 +14,30 @@ const VC = {
 let data = [];
 let refreshTimer = null;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+const chipFilters = { tema: new Set() };
+
+// ── Témata: hledání konkrétních slov kdekoliv v textu příběhu ──
+const TOPIC_PATTERNS = {
+  'Menstruace/cyklus': /menstruac|cyklus/,
+  'Akné/pleť': /akn[ée]|pleť/,
+  'Nálada': /n[áa]lad/,
+  'Vlasy': /vlas[yůu]/,
+  'Plodnost/otěhotnění': /plodnost|otěhotn|početí/,
+  'Libido': /libido/,
+  'Bolesti hlavy/migrény': /bolest.{0,3}hlav|migr[ée]n/,
+  'Deprese': /depres/,
+  'Váha/hubnutí': /\bváh[ay]\b|hubnut|přibír/,
+  'Cysty': /cyst/,
+  'PCOS': /pcos|pmos/,
+  'Úzkosti': /úzkost/,
+  'Trombóza/srážlivost': /tromb|sr[áa]žliv/,
+  'Endometrióza': /endometri[óo]z/,
+};
+
+function rowTopics(r) {
+  const t = r.join(' ').toLowerCase();
+  return Object.keys(TOPIC_PATTERNS).filter(label => TOPIC_PATTERNS[label].test(t));
+}
 
 // ── Parsování data z Google Forms (D.M.YYYY HH:MM:SS) ──────
 function parseDatum(str) {
@@ -67,14 +91,50 @@ async function tick(retried) {
   }
 }
 
+// ── Filtry (chips) ───────────────────────────────────────
+function toggleGroup(id) {
+  const opts = document.getElementById('grp-' + id);
+  const btn = opts.previousElementSibling;
+  opts.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+function toggleFiltersPanel() {
+  document.getElementById('sidebar-filters').classList.toggle('open');
+  document.getElementById('filters-toggle-btn').classList.toggle('open');
+}
+
+function toggleChip(cat, val) {
+  chipFilters[cat].has(val) ? chipFilters[cat].delete(val) : chipFilters[cat].add(val);
+  document.querySelectorAll('.chip').forEach(el => {
+    const elCat = el.getAttribute('onclick').match(/toggleChip\('(\w+)'/)[1];
+    const elVal = el.getAttribute('onclick').match(/'([^']+)'\)$/)[1];
+    el.classList.toggle('active', chipFilters[elCat]?.has(elVal));
+  });
+  render();
+}
+
+function resetFilters() {
+  Object.values(chipFilters).forEach(set => set.clear());
+  document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
+  document.getElementById('search').value = '';
+  render();
+}
+
 // ── Render ───────────────────────────────────────────────
 function render() {
   const q = document.getElementById('search').value.trim().toLowerCase();
 
   const filtered = data.filter(r => {
-    if (!q) return true;
-    const txt = r.join(' ').toLowerCase();
-    return txt.includes(q);
+    if (q) {
+      const txt = r.join(' ').toLowerCase();
+      if (!txt.includes(q)) return false;
+    }
+    if (chipFilters.tema.size) {
+      const topics = rowTopics(r);
+      if (![...chipFilters.tema].some(sel => topics.includes(sel))) return false;
+    }
+    return true;
   });
 
   const sort = document.getElementById('f-sort').value;
