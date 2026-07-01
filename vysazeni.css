@@ -36,6 +36,33 @@
   border-top: none;
 }
 
+.vysazeni-layout .lituje-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.chip-nelituji.active { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.chip-lituji.active   { background: var(--red-bg);   color: var(--red);   border-color: var(--red);   }
+.chip-smisene.active  { background: #fdf3e3;          color: #9a6700;      border-color: #f0c060;      }
+
+.b-lituje-ne      { background: var(--green-bg); color: var(--green); }
+.b-lituje-ano     { background: var(--red-bg);   color: var(--red);   }
+.b-lituje-smisene { background: #fdf3e3;          color: #9a6700;      }
+
+.vysazeni-layout .card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
 .vysazeni-layout .tema-chips {
   display: flex;
   flex-direction: column;
@@ -43,7 +70,8 @@
 }
 
 @media (max-width: 768px) {
-  .vysazeni-layout .tema-chips {
+  .vysazeni-layout .tema-chips,
+  .vysazeni-layout .lituje-chips {
     flex-direction: row;
     flex-wrap: wrap;
   }

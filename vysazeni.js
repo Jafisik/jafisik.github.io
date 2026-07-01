@@ -6,15 +6,22 @@ const VC = {
   duvodPremyslet: 3,
   duvodKonecny: 4,
   poVysazeni: 5,
-  lituje: 6,
-  partnerVztahy: 7,
-  ochranaPo: 8,
+  litujeStrukturovane: 6,  // ne, nelituji / ano, lituji / smíšené pocity
+  litujeRozvest: 7,        // volný text rozvedení odpovědi
+  partnerVztahy: 8,
+  ochranaPo: 9,
 };
 
 let data = [];
 let refreshTimer = null;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-const chipFilters = { tema: new Set() };
+const chipFilters = { tema: new Set(), lituje: new Set() };
+
+const LITUJE_MAP = {
+  'Nelituji': 'ne, nelituji vysazení',
+  'Lituji':   'ano, lituji vysazení',
+  'Smíšené':  'smíšené pocity',
+};
 
 // ── Témata: hledání konkrétních slov kdekoliv v textu příběhu ──
 const TOPIC_PATTERNS = {
@@ -127,6 +134,10 @@ function render() {
       const topics = rowTopics(r);
       if (![...chipFilters.tema].some(sel => topics.includes(sel))) return false;
     }
+    if (chipFilters.lituje.size) {
+      const val = (r[VC.litujeStrukturovane] || '').trim().toLowerCase();
+      if (![...chipFilters.lituje].some(label => val === LITUJE_MAP[label].toLowerCase())) return false;
+    }
     return true;
   });
 
@@ -148,18 +159,29 @@ function render() {
   document.getElementById('list').innerHTML = filtered.map((r, i) => buildCardHtml(r, i)).join('');
 }
 
+const LITUJE_BADGE = {
+  'ne, nelituji vysazení': { cls: 'b-lituje-ne',      label: 'Nelituji' },
+  'ano, lituji vysazení':  { cls: 'b-lituje-ano',     label: 'Lituji' },
+  'smíšené pocity':        { cls: 'b-lituje-smisene', label: 'Smíšené pocity' },
+};
+
 function buildCardHtml(r, i) {
   const name = (r[VC.jmenoVek] || 'Anonymní').trim();
   const initial = name.charAt(0).toUpperCase();
   const datePart = (r[VC.datum] || '').split(' ')[0];
   const preview = (r[VC.duvodKonecny] || r[VC.poVysazeni] || '').trim();
+  const litujeBadge = LITUJE_BADGE[(r[VC.litujeStrukturovane] || '').trim().toLowerCase()];
+  const badgeHtml = litujeBadge
+    ? `<span class="badge ${litujeBadge.cls}">${litujeBadge.label}</span>`
+    : '';
 
   const sections = [
     { l: 'Historie užívání a vysazení HA', v: r[VC.haHistorie] },
     { l: 'Proč přemýšlela o vysazení', v: r[VC.duvodPremyslet] },
     { l: 'Důvod, proč se nakonec odhodlala', v: r[VC.duvodKonecny] },
     { l: 'Co se dělo po vysazení', v: r[VC.poVysazeni] },
-    { l: 'Lituje, nebo ne?', v: r[VC.lituje] },
+    { l: 'Lituje, nebo ne?', v: r[VC.litujeStrukturovane] },
+    { l: 'Rozvití odpovědi', v: r[VC.litujeRozvest] },
     { l: 'Partner a vztahy', v: r[VC.partnerVztahy] },
     { l: 'Ochrana po vysazení', v: r[VC.ochranaPo] },
   ].map(s => ({ l: s.l, v: (s.v || '').trim() || '–' }));
@@ -169,7 +191,10 @@ function buildCardHtml(r, i) {
       <div class="card-top" onclick="toggle(${i})" style="cursor:pointer">
         <div class="avatar">${initial}</div>
         <div class="card-info">
-          <div class="card-name">${escapeHtml(name)}</div>
+          <div class="card-name-row">
+            <div class="card-name">${escapeHtml(name)}</div>
+            ${badgeHtml}
+          </div>
           <div class="card-sub">${escapeHtml(datePart)}</div>
           <div class="story-preview">${escapeHtml(preview.slice(0, 140))}${preview.length > 140 ? '…' : ''}</div>
         </div>
