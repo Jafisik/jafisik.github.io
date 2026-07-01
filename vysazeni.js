@@ -196,7 +196,10 @@ function buildCardHtml(r, i) {
             ${badgeHtml}
           </div>
           <div class="card-sub">${escapeHtml(datePart)}</div>
-          <div class="story-preview">${escapeHtml(preview.slice(0, 140))}${preview.length > 140 ? '…' : ''}</div>
+          <div class="story-preview">
+            <span class="preview-short">${escapeHtml(preview.slice(0, 140))}${preview.length > 140 ? '…' : ''}</span>
+            <span class="preview-full">${escapeHtml(preview)}</span>
+          </div>
         </div>
         <svg class="chevron" id="chev-${i}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
       </div>
