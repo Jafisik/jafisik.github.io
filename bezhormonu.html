@@ -132,19 +132,24 @@
       max-height: 300px;
       object-fit: cover;
       object-position: top;
-      order: 2;
-    }
-
-    .landing-cards {
-      grid-template-columns: 1fr;
       order: 1;
     }
 
     .landing-about-text {
-      order: 3;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
+      order: 2;
+      font-size: 12px;
     }
+
+    .landing-about-text h1 { font-size: 16px; }
+    .landing-about-text p { font-size: 12px; }
+    .landing-ig { font-size: 11px; }
+
+    .landing-cards {
+      grid-template-columns: 1fr;
+      order: 3;
+    }
+
+    .landing-card-desc { display: none; }
   }
 </style>
 </head>
