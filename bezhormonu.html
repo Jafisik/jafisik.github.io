@@ -156,15 +156,18 @@
 
     .bio-read-more {
       display: inline-block;
-      margin-top: 4px;
+      margin-top: 6px;
       background: none;
       border: none;
       padding: 0;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--accent);
       cursor: pointer;
     }
+
+    .landing-card { padding: 1rem 1.25rem; }
+    .landing-card-arrow { margin-top: 0.5rem; }
 
     .bio-extra { display: none; }
     .bio-extra.open { display: block; }
@@ -189,7 +192,6 @@ function toggleBioMore() {
     <div class="landing-about-text">
       <h1>Ing. Magdalena Urbánková</h1>
       <p>Jmenuji se Magdalena Urbánková a jsem zakladatelkou projektu Bez Hormonu. Věnuji se tvorbě vzdělávacího obsahu o ženském zdraví, menstruačním cyklu, plodnosti, antikoncepci a sexualitě.</p>
-      <button class="bio-read-more" id="bio-read-more" onclick="toggleBioMore()">Číst více</button>
       <div class="bio-extra" id="bio-extra">
         <p>Mým cílem je předávat informace srozumitelně, bez strašení, zjednodušování i zbytečných tabu. Věřím, že každá žena by měla mít možnost porozumět svému tělu a dělat informovaná rozhodnutí o svém zdraví.</p>
         <p>Kromě tvorby obsahu na sociálních sítích pořádám besedy, přednášky a spolupracuji s odborníky z oblasti gynekologie, reprodukční medicíny a dalších oborů souvisejících se ženským zdravím.</p>
@@ -198,6 +200,7 @@ function toggleBioMore() {
           Sleduj mě na Instagramu @bezhormonu
         </a>
       </div>
+      <button class="bio-read-more" id="bio-read-more" onclick="toggleBioMore()">Číst více</button>
     </div>
 
     <div class="landing-cards">
