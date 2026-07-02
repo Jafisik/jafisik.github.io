@@ -24,7 +24,6 @@
     width: 100%;
   }
 
-
   .landing-about {
     display: flex;
     gap: 2.5rem;
@@ -92,11 +91,6 @@
     transform: translateY(-2px);
   }
 
-  .landing-card-icon {
-    font-size: 28px;
-    margin-bottom: 1rem;
-  }
-
   .landing-card-title {
     font-size: 17px;
     font-weight: 600;
@@ -121,10 +115,12 @@
     gap: 4px;
   }
 
+  .about-toggle-btn { display: none; }
+
   @media (max-width: 640px) {
     .landing-about {
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 0;
     }
 
     .landing-about-img {
@@ -132,9 +128,42 @@
       max-height: 300px;
       object-fit: cover;
       object-position: top;
+      border-radius: var(--radius) var(--radius) 0 0;
     }
 
-    .landing-about-text .bio-extra { display: none; }
+    .about-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-toggle-btn svg {
+      transition: transform 0.2s;
+    }
+
+    .about-toggle-btn.open svg {
+      transform: rotate(180deg);
+    }
+
+    .landing-about-text {
+      display: none;
+      padding: 1rem 0 0.5rem;
+    }
+
+    .landing-about-text.open {
+      display: block;
+    }
 
     .landing-cards {
       grid-template-columns: 1fr;
@@ -148,13 +177,15 @@
   <div class="landing-wrap">
     <div class="landing-about">
       <img src="Bezhormonu_promo_3-3-2026_A4_SH-11.jpg" alt="Magdalena Urbánková" class="landing-about-img">
-      <div class="landing-about-text">
+      <button class="about-toggle-btn" id="about-toggle-btn" onclick="toggleAbout()">
+        O mně
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="landing-about-text" id="landing-about-text">
         <h1>Ing. Magdalena Urbánková</h1>
         <p>Jmenuji se Magdalena Urbánková a jsem zakladatelkou projektu Bez Hormonu. Věnuji se tvorbě vzdělávacího obsahu o ženském zdraví, menstruačním cyklu, plodnosti, antikoncepci a sexualitě.</p>
-        <div class="bio-extra">
         <p>Mým cílem je předávat informace srozumitelně, bez strašení, zjednodušování i zbytečných tabu. Věřím, že každá žena by měla mít možnost porozumět svému tělu a dělat informovaná rozhodnutí o svém zdraví.</p>
         <p>Kromě tvorby obsahu na sociálních sítích pořádám besedy, přednášky a spolupracuji s odborníky z oblasti gynekologie, reprodukční medicíny a dalších oborů souvisejících se ženským zdravím.</p>
-        </div>
         <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="landing-ig">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
           Sleduj mě na Instagramu @bezhormonu
@@ -178,5 +209,11 @@
   </div>
 </div>
 
+<script>
+function toggleAbout() {
+  document.getElementById('landing-about-text').classList.toggle('open');
+  document.getElementById('about-toggle-btn').classList.toggle('open');
+}
+</script>
 </body>
 </html>
