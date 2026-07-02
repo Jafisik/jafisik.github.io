@@ -71,6 +71,9 @@
 
   .landing-ig:hover { text-decoration: underline; }
 
+  .bio-read-more { display: none; }
+  .bio-extra { display: contents; }
+
   .landing-cards {
     grid-area: cards;
     display: grid;
@@ -150,8 +153,32 @@
     }
 
     .landing-card-desc { display: none; }
+
+    .bio-read-more {
+      display: inline-block;
+      margin-top: 4px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .bio-extra { display: none; }
+    .bio-extra.open { display: block; }
   }
 </style>
+
+<script>
+function toggleBioMore() {
+  const extra = document.getElementById('bio-extra');
+  const btn = document.getElementById('bio-read-more');
+  const open = extra.classList.toggle('open');
+  btn.textContent = open ? 'Číst méně' : 'Číst více';
+}
+</script>
 </head>
 <body>
 
@@ -162,12 +189,15 @@
     <div class="landing-about-text">
       <h1>Ing. Magdalena Urbánková</h1>
       <p>Jmenuji se Magdalena Urbánková a jsem zakladatelkou projektu Bez Hormonu. Věnuji se tvorbě vzdělávacího obsahu o ženském zdraví, menstruačním cyklu, plodnosti, antikoncepci a sexualitě.</p>
-      <p>Mým cílem je předávat informace srozumitelně, bez strašení, zjednodušování i zbytečných tabu. Věřím, že každá žena by měla mít možnost porozumět svému tělu a dělat informovaná rozhodnutí o svém zdraví.</p>
-      <p>Kromě tvorby obsahu na sociálních sítích pořádám besedy, přednášky a spolupracuji s odborníky z oblasti gynekologie, reprodukční medicíny a dalších oborů souvisejících se ženským zdravím.</p>
-      <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="landing-ig">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-        Sleduj mě na Instagramu @bezhormonu
-      </a>
+      <button class="bio-read-more" id="bio-read-more" onclick="toggleBioMore()">Číst více</button>
+      <div class="bio-extra" id="bio-extra">
+        <p>Mým cílem je předávat informace srozumitelně, bez strašení, zjednodušování i zbytečných tabu. Věřím, že každá žena by měla mít možnost porozumět svému tělu a dělat informovaná rozhodnutí o svém zdraví.</p>
+        <p>Kromě tvorby obsahu na sociálních sítích pořádám besedy, přednášky a spolupracuji s odborníky z oblasti gynekologie, reprodukční medicíny a dalších oborů souvisejících se ženským zdravím.</p>
+        <a href="https://www.instagram.com/bezhormonu" target="_blank" rel="noopener" class="landing-ig">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Sleduj mě na Instagramu @bezhormonu
+        </a>
+      </div>
     </div>
 
     <div class="landing-cards">
