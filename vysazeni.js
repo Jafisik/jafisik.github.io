@@ -180,7 +180,7 @@ function buildCardHtml(r, i) {
     { l: 'Proč přemýšlela o vysazení', v: r[VC.duvodPremyslet] },
     { l: 'Důvod, proč se nakonec odhodlala', v: r[VC.duvodKonecny] },
     { l: 'Co se dělo po vysazení', v: r[VC.poVysazeni] },
-    { l: 'Lituje, nebo ne?', v: r[VC.litujeRozvest] },
+    { l: 'Lituje vysazení HA?', v: r[VC.litujeRozvest] },
     { l: 'Partner a vztahy', v: r[VC.partnerVztahy] },
     { l: 'Ochrana po vysazení', v: r[VC.ochranaPo] },
   ].map(s => ({ l: s.l, v: (s.v || '').trim() || '–' }));
